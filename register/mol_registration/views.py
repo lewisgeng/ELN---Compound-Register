@@ -44,6 +44,9 @@ def reg_result(request):
         img_path = request.POST.get('img_path')
         tpsa = request.POST.get('tpsa')
         print(smiles,logp,compound_id)
-        molecule_insert = mol_props.objects.create(compound_id=compound_id, smiles=smiles, TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path)
-        molecule_insert.save()
-        return HttpResponse('化合物注册成功！')
+        if mol_props.objects.filter(smiles=smiles).exists():
+            return HttpResponse('化合物已存在，请勿重复注册！')
+        else:
+            molecule_insert = mol_props.objects.create(compound_id=compound_id, smiles=smiles, TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path)
+            molecule_insert.save()
+            return HttpResponse('化合物注册成功！')
