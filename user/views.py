@@ -66,7 +66,13 @@ def index(request):
         return redirect("/login/")
 
 def documentation(request):
-    return render(request,'documentation.html')
+    if request.session.get('is_login'):
+        return render(request,'documentation.html')
+    else:
+        return redirect("/login/")
 
 def contact(request):
-    return render(request,'contact.html')
+    if request.session.get('is_login'):
+        return render(request,'contact.html')
+    else:
+        return redirect("/login/")

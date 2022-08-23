@@ -9,4 +9,4 @@ class UsersInfo(models.Model):
     badge=models.IntegerField(default=0)
     phone_number=models.IntegerField(default=0)
     register_time = models.DateField(null=True,auto_now_add=True)
-    ticket = models.CharField(max_length=1000,default='')
+    status = models.CharField(max_length=50,default='')
