@@ -1,0 +1,728 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>DocGrids - Documentation Bootstrap 5 HTML Template.</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/LineIcons.3.0.css">
+<link rel="stylesheet" href="/static/css/animate.css">
+<link rel="stylesheet" href="/static/css/tiny-slider.css">
+<link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+
+
+<div class="preloader">
+<div class="preloader-inner">
+<div class="preloader-icon">
+<span></span>
+<span></span>
+</div>
+</div>
+</div>
+
+
+<header class="header navbar-area">
+<div class="container">
+<div class="row align-items-center">
+<div class="col-lg-12">
+<div class="nav-inner">
+
+<nav class="navbar navbar-expand-lg">
+<a class="navbar-brand" href="">
+<img src="/static/picture/logo.svg" alt="Logo">
+</a>
+<button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="toggler-icon"></span>
+<span class="toggler-icon"></span>
+<span class="toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
+<ul id="nav" class="navbar-nav ms-auto">
+<li class="nav-item">
+<a href="" class="active" aria-label="Toggle navigation">Home</a>
+</li>
+<li class="nav-item">
+<a href="/documentation" aria-label="Toggle navigation">Documentation</a>
+</li>
+<li class="nav-item">
+<a href="/contact" aria-label="Toggle navigation">Support</a>
+</li>
+</ul>
+</div> 
+<div class="button">
+<a href="/register_page" class="btn">Register</a>
+</div>
+
+<div class="button">
+<a href="/logout" class="btn">Logout</a>
+</div>
+<div class="button">
+<a class="btn">Welcome,{{aa}}</a>
+</div>
+</nav>
+
+</div>
+</div>
+</div> 
+</div> 
+</header>
+
+
+<section class="hero-area">
+<div class="container">
+<div class="row align-items-center">
+<div class="col-lg-6 col-md-12 col-12">
+<div class="hero-content">
+<h2>Welcome to this platform!</h2>
+<p>Thinking about having an online documentation or
+support system for your new startup? The DocsGrids have everythings you need to develop your
+own help
+center.</p>
+
+
+<ul class="popular-tag">
+<li>Popular Tag:</li>
+<li><a href="javascript:void(0)">WordPress</a></li>
+<li><a href="javascript:void(0)">HTML</a></li>
+<li><a href="javascript:void(0)">Footer</a></li>
+</ul>
+</div>
+</div>
+<div class="col-lg-6 col-12">
+
+<iframe id="ifKetcher" src="/static/ketcher/index.html" width="640" height="480"></iframe>
+
+<form class="search-form"  id ='submitsmiles' action = '/registration/' method = 'post' style='text-align:right'>
+	{% csrf_token %}
+	<input type="text" name='getsmiles' id ='getsmiles' style="display: none">
+    <a href='#' onclick="getifKetcher('ifKetcher');">Pre-register</a>
+</form>
+
+
+<script type="text/javascript">
+function getifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles().then((result) => {
+        //alert(result);
+		document.getElementById('getsmiles').value = result;
+		if (result.length == 0)
+		    alert('没有获取到化合物结构，请重新输入! ')
+        else
+		    window.console.info(document.getElementById('getsmiles').value )
+		    document.getElementById('submitsmiles').submit();
+      })
+		}
+</script>
+
+</div>
+</div>
+</div>
+</section>
+
+
+<section class="features section">
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="section-title">
+<h3 class="wow zoomIn" data-wow-delay=".2s">Features</h3>
+<h2 class="wow fadeInUp" data-wow-delay=".4s"></h2>
+<p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+Ipsum available, but the majority have suffered alteration in some form.</p>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".2s">
+
+<div class="single-featuer">
+<div class="service-icon">
+<i class="lni lni-book"></i>
+</div>
+<h3>Knowledge Base</h3>
+<p>Get a better understanding of where your traffic is coming from.</p>
+<a href="javascript:void(0)" class="more">Read More <i class="lni lni-arrow-right"></i></a>
+</div>
+
+</div>
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".4s">
+
+<div class="single-featuer">
+<div class="service-icon">
+<i class="lni lni-microphone"></i>
+</div>
+<h3>Community Forum</h3>
+<p>Lots of questions have asked before and have answers here.</p>
+<a href="javascript:void(0)" class="more">Read More <i class="lni lni-arrow-right"></i></a>
+</div>
+
+</div>
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".6s">
+
+<div class="single-featuer">
+<div class="service-icon">
+<i class="lni lni-folder"></i>
+</div>
+<h3>Documentation</h3>
+<p>Read our documentation to get start and browse the available UI kit.</p>
+<a href="javascript:void(0)" class="more">Read More <i class="lni lni-arrow-right"></i></a>
+</div>
+ 
+</div>
+</div>
+</div>
+</section>
+
+
+<section class="accordion-area section">
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="section-title">
+<h3 class="wow zoomIn" data-wow-delay=".2s">FAQ</h3>
+<h2 class="wow fadeInUp" data-wow-delay=".4s">Frequently asked
+questions</h2>
+<p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+Ipsum available, but the majority have suffered alteration in some form.</p>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-6">
+<div class="accordion style2" id="accordionExample">
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingOne">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+<span>Material types can you work with?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingTwo">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+<span>Is Smart Lock required for instant apps?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingThree">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+<span>Can I have multiple activities in a single feature?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingFour">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+<span>Can I share resources between features?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-lg-6 col-12">
+<div class="accordion style2" id="accordionExample2">
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingOne2">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne2" aria-expanded="false" aria-controls="collapseOne2">
+<span>Material types can you work with?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseOne2" class="accordion-collapse collapse" aria-labelledby="headingOne2" data-bs-parent="#accordionExample2">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingTwo2">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
+<span>Is Smart Lock required for instant apps?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseTwo2" class="accordion-collapse collapse" aria-labelledby="headingTwo2" data-bs-parent="#accordionExample2">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingThree2">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree2" aria-expanded="false" aria-controls="collapseThree2">
+<span>Can I have multiple activities in a single feature?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseThree2" class="accordion-collapse collapse" aria-labelledby="headingThree2" data-bs-parent="#accordionExample2">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<h2 class="accordion-header" id="headingFour2">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour2" aria-expanded="false" aria-controls="collapseFour2">
+<span>Can I share resources between features?</span><i class="lni lni-chevron-down"></i>
+</button>
+</h2>
+<div id="collapseFour2" class="accordion-collapse collapse" aria-labelledby="headingFour2" data-bs-parent="#accordionExample2">
+<div class="accordion-body">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse
+ultrices gravida.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<section class="topics section">
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="section-title">
+<h3 class="wow zoomIn" data-wow-delay=".2s">Topics</h3>
+ <h2 class="wow fadeInUp" data-wow-delay=".4s">Explore Topics</h2>
+<p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+Ipsum available, but the majority have suffered alteration in some form.</p>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".2s">
+
+<div class="single-topic">
+<div class="topic-content">
+<h4 class="topic-title"><i class="lni lni-list"></i> Getting Started</h4>
+<ul class="topic-list">
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Installation</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Theme setup</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Layout</a>
+</li>
+</ul>
+<a href="documentation.html" class="more">View All <i class="lni lni-arrow-right"></i></a>
+</div>
+</div>
+
+</div>
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".4s">
+
+<div class="single-topic">
+<div class="topic-content">
+<h4 class="topic-title"><i class="lni lni-grid-alt"></i> Elements</h4>
+<ul class="topic-list">
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Tabs</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Icons</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Buttons</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Alerts</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Accordions</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Image Hotspots</a>
+</li>
+</ul>
+<a href="documentation.html" class="more">View All <i class="lni lni-arrow-right"></i></a>
+</div>
+</div>
+
+</div>
+<div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay=".6s">
+
+<div class="single-topic">
+<div class="topic-content">
+<h4 class="topic-title"><i class="lni lni-grid-alt"></i> Content</h4>
+<ul class="topic-list">
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Video Widget</a>
+</li>
+<li>
+ <a href="documentation.html"><i class="lni lni-notepad"></i> Tables</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Keyboard Shortcuts</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> List Items Style</a>
+</li>
+<li>
+<a href="documentation.html"><i class="lni lni-notepad"></i> Changelog</a>
+</li>
+</ul>
+<a href="documentation.html" class="more">View All <i class="lni lni-arrow-right"></i></a>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+
+<section class="team section">
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="section-title">
+<h3 class="wow zoomIn" data-wow-delay=".2s">Team</h3>
+<h2 class="wow fadeInUp" data-wow-delay=".4s">Our Team Members</h2>
+<p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+Ipsum available, but the majority have suffered alteration in some form.</p>
+</div>
+</div>
+</div>
+<div class="all-speakers">
+<div class="row">
+<div class="col-lg-3 col-md-6 col-12 wow fadeInUp" data-wow-delay=".2s">
+
+<div class="single-team">
+<div class="top-content">
+<div class="image">
+<img src="/static/picture/team1.jpg" alt="#">
+</div>
+<ul class="social">
+<li class="facebook"><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+<li class="twitter"><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
+<li class="linkedin"><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
+</li>
+<li class="instagram"><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a>
+</li>
+</ul>
+</div>
+<div class="name">
+<h3><a href="javascript:void(0)">Fredric Martinsson</a></h3>
+<span>Web Designer</span>
+</div>
+</div>
+
+</div>
+<div class="col-lg-3 col-md-6 col-12 wow fadeInUp" data-wow-delay=".4s">
+
+<div class="single-team">
+<div class="top-content">
+<div class="image">
+<img src="/static/picture/team2.jpg" alt="#">
+</div>
+<ul class="social">
+<li class="facebook"><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+<li class="twitter"><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
+<li class="linkedin"><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
+</li>
+<li class="instagram"><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a>
+</li>
+</ul>
+</div>
+<div class="name">
+<h3><a href="javascript:void(0)">Mariya Mim</a></h3>
+<span>App Developer</span>
+</div>
+</div>
+
+</div>
+<div class="col-lg-3 col-md-6 col-12 wow fadeInUp" data-wow-delay=".6s">
+
+<div class="single-team">
+<div class="top-content">
+<div class="image">
+<img src="/static/picture/team3.jpg" alt="#">
+</div>
+<ul class="social">
+<li class="facebook"><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+<li class="twitter"><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
+<li class="linkedin"><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
+</li>
+<li class="instagram"><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a>
+</li>
+</ul>
+</div>
+<div class="name">
+<h3><a href="javascript:void(0)">Thomas Dendy</a></h3>
+<span>Graphics Designer</span>
+</div>
+</div>
+
+</div>
+<div class="col-lg-3 col-md-6 col-12 wow fadeInUp" data-wow-delay=".8s">
+
+<div class="single-team">
+<div class="top-content">
+<div class="image">
+<img src="/static/picture/team4.jpg" alt="#">
+</div>
+<ul class="social">
+<li class="facebook"><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+<li class="twitter"><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
+<li class="linkedin"><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
+</li>
+<li class="instagram"><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a>
+</li>
+</ul>
+</div>
+<div class="name">
+<h3><a href="javascript:void(0)">Julia Jegmin</a></h3>
+<span>Ui/Ux Designer</span>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<section id="testimonials" class="section testimonials">
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="section-title">
+<h3 class="wow zoomIn" data-wow-delay=".2s">Testimonials</h3>
+<h2 class="wow fadeInUp" data-wow-delay=".4s">What people says about us</h2>
+<p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+Ipsum available, but the majority have
+suffered alteration in some form.</p>
+</div>
+</div>
+</div>
+<div class="slider-head">
+<div class="row">
+<div class="col-lg-8 offset-lg-2 col-md-12 col-12">
+<div class="testimonial-slider">
+
+<div class="single-testimonial">
+<div class="top-section">
+<img src="/static/picture/testi-1.png" alt="#">
+<h3>
+Aaron Almaraz
+<span>CEO & Founder at Gearat</span>
+</h3>
+<ul class="rating">
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+</ul>
+</div>
+<p>Time is the most precious thing you have when bootstrapping. You can't take time to
+ponder on
+design…</p>
+</div>
+
+
+<div class="single-testimonial">
+<div class="top-section">
+<img src="/static/picture/testi-2.png" alt="#">
+<h3>
+Marleah Eagleston
+<span>Founder at Spicenet</span>
+</h3>
+<ul class="rating">
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+</ul>
+</div>
+ <p>Time is the most precious thing you have when bootstrapping. You can't take time to
+ponder on
+design…</p>
+</div>
+
+
+<div class="single-testimonial">
+<div class="top-section">
+<img src="/static/picture/testi-3.png" alt="#">
+<h3>
+Phet Putrie
+<span>Freelancer</span>
+</h3>
+<ul class="rating">
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+</ul>
+</div>
+<p>Time is the most precious thing you have when bootstrapping. You can't take time to
+ponder on
+design…</p>
+</div>
+
+
+<div class="single-testimonial">
+<div class="top-section">
+<img src="/static/picture/testi-2.png" alt="#">
+<h3>
+Prescott MacCaffery
+<span>Writer</span>
+</h3>
+<ul class="rating">
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+<li><i class="lni lni-star-filled"></i></li>
+</ul>
+</div>
+<p>Time is the most precious thing you have when bootstrapping. You can't take time to
+ponder on
+design…</p>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<footer class="footer section">
+<div class="container">
+<div class="row">
+<div class="col-lg-8 offset-lg-2 col-12">
+
+<div class="footer-content">
+<div class="logo">
+<a href="javascript:void(0)">
+<img src="/static/picture/logo.svg" alt="#">
+</a>
+</div>
+<p>DocGrids is a Support & Help Center Template to create your own 24/7 self-service customer
+support center.</p>
+<ul class="social">
+<li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+ <li><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
+<li><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a></li>
+<li><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a></li>
+</ul>
+<div class="copyright-text">
+<p>Copyright &copy; 2022.Company name All rights reserved.<a target="_blank" href="https://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</footer>
+
+
+<a href="#" class="scroll-top">
+<i class="lni lni-chevron-up"></i>
+</a>
+
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/wow.min.js"></script>
+<script src="/static/js/tiny-slider.js"></script>
+<script src="/static/js/main.js"></script>
+<script>
+        //========= testimonial 
+        tns({
+            container: '.testimonial-slider',
+            items: 3,
+            slideBy: 'page',
+            autoplay: false,
+            mouseDrag: true,
+            gutter: 0,
+            nav: true,
+            controls: false,
+            controlsText: ['<i class="lni lni-arrow-left"></i>', '<i class="lni lni-arrow-right"></i>'],
+            responsive: {
+                0: {
+                    items: 1,
+                },
+                540: {
+                    items: 1,
+                },
+                768: {
+                    items: 1,
+                },
+                992: {
+                    items: 1,
+                },
+                1170: {
+                    items: 1,
+                }
+            }
+        });
+
+
+
+        // WOW active
+        new WOW().init();
+    </script>
+</body>
+</html>

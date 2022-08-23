@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="gl">
+<style type="text/css">
+	td{
+		text-align:center;
+	}
+	a{
+		text-decoration: none;
+	}
+	img{
+		width: 100px;height:100px;
+		align: "center";
+	}
+</style>
+<head>
+	<meta charset="utf-8">
+	<title>Registration Confirm</title>
+</head>
+
+<body style="padding-top: 3em">
+<table border="1" cellspacing="0" cellpadding="5" align="center" width="60%" >
+	<tr>
+        <th>Structure</th>
+		<th>Compound ID</th>
+		<th>Smiles</th>
+		<th>TPSA</th>
+		<th>LogP</th>
+        <th>MW</th>
+	</tr>
+	<tr>
+        <td><img src="{{img_path}}" align="center"></td>
+		<td>{{compound_id}}</td>
+		<td>{{smiles}}</td>
+		<td>{{tpsa}}</td>
+		<td>{{logp}}</td>
+		<td>{{mw}}</td>
+	</tr>
+</table>
+<form action="/reg_result/" method="post" style="text-align: center">
+    {% csrf_token %}
+	<input name='img_path' value="{{img_path}}" style="display: none">
+	<input name='compound_id' value="{{compound_id}}" style="display: none">
+    <input name='smiles' value="{{smiles}}" style="display: none">
+    <input name='tpsa' value="{{tpsa}}" style="display: none">
+    <input name='logp' value="{{logp}}" style="display: none">
+    <input name='mw' value="{{mw}}" style="display: none">
+	<button type="submit">Confirm</button>
+</form>
+</body>
+</html>
+
+
