@@ -20,7 +20,7 @@ EVER EVER EVER!
 
 
 Main page
-![image](https://user-images.githubusercontent.com/110211839/186346832-26476519-3ee7-4096-b567-f25c7184711d.png)
+![image](https://user-images.githubusercontent.com/110211839/186350147-2e1a3896-6cf6-4929-8cda-9876b0fb39d3.png)
 
 Compound registration
 ![image](https://user-images.githubusercontent.com/110211839/186347645-167fb810-14a5-4faf-abb6-af51a5a2b904.png)
