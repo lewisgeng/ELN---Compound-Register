@@ -58,7 +58,7 @@
 </ul>
 </div> 
 <div class="button">
-<a href="/register_page" class="btn">Register</a>
+<a href="/user_register" class="btn">Register</a>
 </div>
 
 <div class="button">
@@ -106,6 +106,12 @@ center.</p>
     <a href='#' onclick="getifKetcher('ifKetcher');">Pre-register</a>
 </form>
 
+<form class="search-form"  id ='searchsmiles' action = '/search/' method = 'post' style='text-align:right'>
+	{% csrf_token %}
+	<input type="text" name='getsearchsmiles' id ='getsearchsmiles' style="display: none">
+    <input type="text" value="0.8" name='similarity' id ='similarity' >
+    <a href='#' onclick="getifKetcher_search('ifKetcher');">Substructure Search</a>
+</form>
 
 <script type="text/javascript">
 function getifKetcher(ifKetcher){
@@ -126,6 +132,26 @@ function getifKetcher(ifKetcher){
 		    document.getElementById('submitsmiles').submit();
       })
 		}
+
+function getifKetcher_search(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles().then((result) => {
+        //alert(result);
+		document.getElementById('getsearchsmiles').value = result;
+		if (result.length == 0)
+		    alert('没有获取到化合物结构，请重新输入! ')
+        else
+		    window.console.info(document.getElementById('getsearchsmiles').value )
+		    document.getElementById('searchsmiles').submit();
+      })
+		}
+
 </script>
 
 </div>

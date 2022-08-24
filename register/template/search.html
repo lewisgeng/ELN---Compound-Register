@@ -1,1 +1,43 @@
-{{message}}
+<!DOCTYPE html>
+<html lang="gl">
+<style type="text/css">
+	td{
+		text-align:center;
+	}
+	a{
+		text-decoration: none;
+	}
+	img{
+		width: 100px;height:100px;
+		align: "center";
+	}
+</style>
+<head>
+	<meta charset="utf-8">
+	<title>Registration Confirm</title>
+</head>
+
+<body style="padding-top: 3em">
+<table border="1" cellspacing="0" cellpadding="5" align="center" width="60%" >
+	<tr>
+        <th>Structure</th>
+		<th>Compound ID</th>
+		<th>Smiles</th>
+        <th>Similarity</th>
+        <th>Download</th>
+	</tr>
+     {%for item in search_result %}
+	<tr>
+            <td><img src="{{item.img_file}}" align="center"></td>
+		    <td>{{item.compound_id}}</td>
+            <td>{{item.smiles}}</td>
+            <td>{{item.similarity}}</td>
+            <td><a href="{{ item.mol_file_path }}">Download MOL</a></td>
+	</tr>
+     {% endfor %}
+</table>
+
+</body>
+</html>
+
+

@@ -78,12 +78,8 @@ WSGI_APPLICATION = 'register.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'localhost:1521/XEPDB1',
-        'USER': 'django',
-        'PASSWORD': 'genglv',
-        #'HOST': "",  # Set to empty string for localhost
-        #'PORT': '1521',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

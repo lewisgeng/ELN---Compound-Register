@@ -33,4 +33,5 @@ urlpatterns = [
     #app-mol_register相关的url
     path('registration/', mol_registration_view.registration),
     path('reg_result/', mol_registration_view.reg_result),
+    path('search/', mol_registration_view.search),
 ]
