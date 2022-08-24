@@ -11,27 +11,30 @@ def registration(request):
             #分子属性及ID
             smiles = request.POST.get('getsmiles')
             mol = Chem.MolFromSmiles(smiles)
-            tpsa = round(Descriptors.TPSA(mol),3)
-            logp = round(Descriptors.MolLogP(mol),3)
-            mw = round(Descriptors.MolWt(mol),3)
-            compound_id_last = mol_props.objects.order_by('-compound_id').first().compound_id
-            #print(compound_id_last)
-            id = compound_id_last.split('-')[1]
-            id_1 = int(id)+1
-            id_2 = str(id_1).zfill(6)
-            compound_id = 'QL-' + id_2
-            #分子图片输出
-            Draw.MolToFile(mol, './register/template/static/mol_image/%s.png' % compound_id)
-            img_path = '/static/mol_image/%s.png' % compound_id
-            #render进html页面
-            ctx = {}
-            ctx['tpsa'] = tpsa
-            ctx['logp'] = logp
-            ctx['mw'] = mw
-            ctx['compound_id'] = compound_id
-            ctx['img_path'] = img_path
-            ctx['smiles'] = smiles
-            return render(request,'registration.html',locals())
+            if mol:
+                tpsa = round(Descriptors.TPSA(mol),3)
+                logp = round(Descriptors.MolLogP(mol),3)
+                mw = round(Descriptors.MolWt(mol),3)
+                compound_id_last = mol_props.objects.order_by('-compound_id').first().compound_id
+                #print(compound_id_last)
+                id = compound_id_last.split('-')[1]
+                id_1 = int(id)+1
+                id_2 = str(id_1).zfill(6)
+                compound_id = 'QL-' + id_2
+                #分子图片输出
+                Draw.MolToFile(mol, './register/template/static/mol_image/%s.png' % compound_id)
+                img_path = '/static/mol_image/%s.png' % compound_id
+                #render进html页面
+                ctx = {}
+                ctx['tpsa'] = tpsa
+                ctx['logp'] = logp
+                ctx['mw'] = mw
+                ctx['compound_id'] = compound_id
+                ctx['img_path'] = img_path
+                ctx['smiles'] = smiles
+                return render(request,'registration.html',locals())
+            else:
+                return HttpResponse('化合物结构错误，请重新输入！')
         else:
             return redirect("/index/")
 

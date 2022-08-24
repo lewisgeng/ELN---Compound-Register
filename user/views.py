@@ -37,7 +37,7 @@ def login(request):
                 request.session['is_login'] = True
                 request.session['userid'] = user.id
                 request.session['username'] = user.username
-                return HttpResponseRedirect('/index/')
+                return redirect('/index/')
             if not check_password(password, user.password):
                 ctx = {}
                 ctx['aa'] = '密码错误'
