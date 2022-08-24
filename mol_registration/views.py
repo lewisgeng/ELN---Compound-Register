@@ -75,7 +75,7 @@ def reg_result(request):
 
 def search(request):
     if request.method == 'POST':
-        if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') !='':
+        if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') !='' and request.POST.get('search_compoundid') =='':
             getsearchsmiles = request.POST.get('getsearchsmiles')
             getsimilarity = float(request.POST.get('similarity'))
             getsearchmol = Chem.MolFromSmiles(getsearchsmiles)
@@ -99,7 +99,25 @@ def search(request):
                 search_result_sorted = sorted(search_result,key=operator.itemgetter('similarity'),reverse=True)
                 print(search_result_sorted)
                 return render(request,'search.html',{'search_result':search_result_sorted})
+        if request.POST.get('getsearchsmiles') == '' and request.POST.get('search_compoundid') !='':
+            search_compoundid = request.POST.get('search_compoundid')
+            #print(search_compoundid)
+            mol_list = mol_props.objects.all()
+            search_result = []
+            for mol in mol_list:
+                search_dict = {}
+                if search_compoundid.upper() in mol.compound_id.upper():
+                    search_dict['compound_id'] = mol.compound_id
+                    search_dict['img_file'] = mol.img_file
+                    search_dict['smiles'] = mol.smiles
+                    search_dict['mol_file_path'] = mol.mol_file_path
+                    search_dict['similarity'] = 1
+                    search_result.append(search_dict)
+                #else:
+                 #   return HttpResponse('没有检索到包含此ID的化合物！')
+            search_result_sorted = sorted(search_result, key=operator.itemgetter('compound_id'), reverse=False)
+            return render(request, 'search.html', {'search_result': search_result_sorted})
         else:
-            return HttpResponse('请输入结构和相似性数值！')
+            return redirect('/index/')
 
 
