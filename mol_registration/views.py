@@ -3,6 +3,7 @@ import operator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from rdkit import Chem,DataStructs
+import rdkit
 from rdkit.Chem import AllChem,Descriptors,Draw
 from .models import mol_props
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
@@ -55,12 +56,14 @@ def registration(request):
 
 def reg_result(request):
     if request.method == 'POST':
-        smiles = request.POST.get('smiles')
+        smiles_original = request.POST.get('smiles')
         logp = request.POST.get('logp')
         mw = request.POST.get('mw')
         compound_id = request.POST.get('compound_id')
         img_path = request.POST.get('img_path')
         tpsa = request.POST.get('tpsa')
+        #convert to canonsmiles
+        smiles = rdkit.Chem.CanonSmiles(smiles_original, useChiral=1)
         mol_mem = Chem.MolFromSmiles(smiles)
         mol = Chem.MolToMolBlock(mol_mem)
         mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % compound_id,'w')
