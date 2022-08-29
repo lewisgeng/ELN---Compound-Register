@@ -109,6 +109,7 @@
             <td>{{item.smiles}}</td>
             <td>{{item.MW}}</td>
             <td><a href="{{ item.mol_file_path }}">Download MOL</a></td>
+            <td><a href="/delete_compound/?delete_compound_id={{item.compound_id}}"><input type="submit" value="Delete"></a></td>
 	</tr>
      {% endfor %}
 </table>

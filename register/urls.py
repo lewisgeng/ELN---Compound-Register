@@ -35,6 +35,8 @@ urlpatterns = [
     path('reg_result/', mol_registration_view.reg_result),
     path('search/', mol_registration_view.search),
     path('compoundlist/', mol_registration_view.compoundlist),
+    path('delete_compound/', mol_registration_view.delete_compound),
+    path('confirm_delete_compound/', mol_registration_view.confirm_delete_compound),
 
     #app-database相关的url
     path('database/', database_view.database),

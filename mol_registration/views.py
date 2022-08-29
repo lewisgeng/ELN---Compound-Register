@@ -1,11 +1,12 @@
 import operator
-
+import os
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from rdkit import Chem,DataStructs
 import rdkit
 from rdkit.Chem import AllChem,Descriptors,Draw
 from .models import mol_props
+from . import models
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
 
 # Create your views here.
@@ -80,12 +81,40 @@ def reg_result(request):
             molecule_insert.save()
             return HttpResponse('化合物注册成功！')
 
+def delete_compound(request):
+    if request.session.get('is_login'):
+        delete_compound_id = request.GET.get('delete_compound_id')
+        ctx = {}
+        ctx['delete_compound_id'] = delete_compound_id
+        return render(request, "confirm_delete_compound.html", {"delete_compound_id": delete_compound_id})
+    else:
+        return redirect('/login/')
+
+def confirm_delete_compound(request):
+    if request.session.get('is_login'):
+        delete_compound_id = request.GET.get('delete_compound_id')
+        confirm_or_not = request.GET.get('confirm_delete')
+        if delete_compound_id and confirm_or_not == '1':
+            models.mol_props.objects.filter(compound_id=delete_compound_id).delete()
+            mol_file_path = './register/template/static/mol_file/%s.mol' % delete_compound_id
+            mol_img_path = './register/template/static/mol_image/%s.png' % delete_compound_id
+            if os.path.exists(mol_file_path):
+                os.remove(mol_file_path)
+            if os.path.exists(mol_img_path):
+                os.remove(mol_img_path)
+            return HttpResponse("删除成功")
+        else:
+            return redirect('/compoundlist/')
+
+
+
+
 def compoundlist(request):
     if request.session.get('is_login'):
         mol_list = mol_props.objects.all().order_by('-compound_id')
         paginator = Paginator(mol_list, 10)
         page = request.GET.get('page',1)
-        print(page)
+        #print(page)
         try:
             sublist = paginator.page(page)
         except PageNotAnInteger:
@@ -139,7 +168,7 @@ def search(request):
                     search_dict['smiles'] = mol.smiles
                     search_dict['MW'] = mol.MW
                     search_dict['mol_file_path'] = mol.mol_file_path
-                    search_dict['similarity'] = 1
+                    search_dict['similarity'] = 'N/A'
                     search_result.append(search_dict)
                 #else:
                  #   return HttpResponse('没有检索到包含此ID的化合物！')
@@ -176,7 +205,7 @@ def search(request):
                         search_dict['smiles'] = mol.smiles
                         search_dict['MW'] = mol.MW
                         search_dict['mol_file_path'] = mol.mol_file_path
-                        search_dict['similarity'] = 1
+                        search_dict['similarity'] = 'N/A'
                         search_result.append(search_dict)
             if qf == '=':
                 for mol in mol_list:
@@ -187,7 +216,7 @@ def search(request):
                         search_dict['smiles'] = mol.smiles
                         search_dict['MW'] = mol.MW
                         search_dict['mol_file_path'] = mol.mol_file_path
-                        search_dict['similarity'] = 1
+                        search_dict['similarity'] = 'N/A'
                         search_result.append(search_dict)
                 #else:
                  #   return HttpResponse('没有检索到包含此ID的化合物！')
