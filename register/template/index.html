@@ -9,7 +9,7 @@
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+<script src="/static/js/jquery.min.js"></script>
 <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 <link rel="stylesheet" href="/static/css/LineIcons.3.0.css">
 <link rel="stylesheet" href="/static/css/animate.css">
@@ -50,10 +50,10 @@
 <a href="" class="active" aria-label="Toggle navigation">Home</a>
 </li>
 <li class="nav-item">
-<a href="/documentation" aria-label="Toggle navigation">Documentation</a>
+<a href="/compoundlist" aria-label="Toggle navigation">Compound List</a>
 </li>
 <li class="nav-item">
-<a href="/contact" aria-label="Toggle navigation">Support</a>
+<a href="/database" aria-label="Toggle navigation">Database</a>
 </li>
 </ul>
 </div> 
@@ -65,7 +65,7 @@
 <a href="/logout" class="btn">Logout</a>
 </div>
 <div class="button">
-<a class="btn">Welcome,{{aa}}</a>
+<a class="btn">Welcome,{{username}}</a>
 </div>
 </nav>
 
@@ -84,10 +84,49 @@
 <form class="search-form" id ='searchsmiles' action = '/search/' method = 'post' >
 	{% csrf_token %}
 	<input type="text" name='getsearchsmiles' id ='getsearchsmiles' style="display: none">
-    Compound ID:<input type="text" name='search_compoundid' id ='search_compoundid'>
-    Similarity:<input type="text" value="0.8" name='similarity' id ='similarity' >
+    <!--Compound ID:<input type="text" name='search_compoundid' id ='search_compoundid'>
+    Similarity:<input type="text" value="0.8" name='similarity' id ='similarity' > -->
+    <select style="border: none" name='property_name' id='property_name' onchange="autopopulate()">
+        <option value="Similarity">Similarity</option>
+        <option value="{{compound_id}}">{{compound_id}}</option>
+        <option value="{{MW}}">{{MW}}</option>
+        <option value="{{TPSA}}">{{TPSA}}</option>
+        <option value="{{logp}}">{{logp}}</option>
+    </select>
+    <select style="border: none;display: none"  name='property_qualifier' id='property_qualifier' >
+        <option value="="> = </option>
+        <option value="<"> < </option>
+        <option value=">"> > </option>
+        <option value="like" id="qualifier_like" style="display: none">*like*</option>
+    </select>
+    <input style="border: solid 1px #cbcbcb" type="text" name='property_value' id='property_value' value="0.8">
     <a href='#' onclick="getifKetcher_search('ifKetcher');" style="float: right">Search</a>
 </form>
+
+<script type="text/javascript">
+function autopopulate() {
+    var property_name=$("#property_name").val();
+    if(property_name == 'Similarity') {
+       // $("#property_value").val(0.8)
+        document.getElementById('property_value').value=0.8;
+        $("#property_qualifier").hide()
+        $("#ifKetcher").show()
+    }
+    if(property_name != 'Similarity'){
+       document.getElementById('property_value').value='';
+       $("#property_qualifier").show()
+       $("#property_qualifier").css('display','inline')
+       $("#ifKetcher").hide()
+       $("#submitsmiles").hide()
+    }
+    if(property_name == 'Compound ID'){
+       $("#qualifier_like").css('display','inline')
+    }
+    if(property_name != 'Compound ID'){
+       $("#qualifier_like").css('display','none')
+    }
+}
+</script>
 
 <ul class="popular-tag">
 <li>Popular Tag:</li>

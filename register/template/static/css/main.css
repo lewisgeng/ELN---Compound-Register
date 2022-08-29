@@ -2184,10 +2184,11 @@ ol {
 
 .hero-area .hero-content .search-form {
   position: relative;
-  padding: 15px 20px 30px;
+  padding: 35px 20px 30px;
   border-radius: 8px;
   -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.137);
           box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.137);
+  margin-top:40px;
 }
 
 @media (max-width: 767px) {
@@ -2207,7 +2208,7 @@ ol {
 .hero-area .hero-content .search-form input {
   height: 55px;
   width: 100%;
-  border: solid 1px #000;
+  border: none;
   border-radius: 6px;
   padding: 0px 160px 0 15px;
 }

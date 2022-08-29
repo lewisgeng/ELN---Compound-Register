@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,HttpResponseRedirect
 from django.http import HttpResponse,HttpResponseRedirect
 from django.views.decorators import csrf
 from .models import UsersInfo
+from mol_registration.models import mol_props
 from django.contrib.auth.hashers import make_password, check_password
 # Create your views here.
 
@@ -60,7 +61,15 @@ def logout(request):
 def index(request):
     if request.session.get('username'):
         ctx = {}
-        ctx['aa'] = request.session.get('username')
+        ctx['username'] = request.session.get('username')
+        #property_fields = [p for p in mol_props._meta.fields]
+        #for property in property_fields:
+            #print(property.name)
+        #查询时选择下拉框，关联分子属性的item
+        ctx['compound_id'] = 'Compound ID'
+        ctx['MW'] = 'MW'
+        ctx['TPSA'] = 'TPSA'
+        ctx['logp'] = 'LogP'
         return render(request,'index.html',ctx)
     else:
         return redirect("/login/")
