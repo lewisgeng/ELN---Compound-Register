@@ -107,6 +107,58 @@ def confirm_delete_compound(request):
             return redirect('/compoundlist/')
 
 
+def edit_compound(request):
+    if request.session.get('is_login'):
+        if request.method == 'GET':
+            edit_compound_id = request.GET.get('edit_compound_id')
+            #return HttpResponse("开始edit")
+            #print(edit_compound_id)
+            if mol_props.objects.filter(compound_id=edit_compound_id).exists():
+                edit_compound_item =  mol_props.objects.get(compound_id=edit_compound_id)
+            ctx={}
+            ctx['edit_compound_item_smiles'] = edit_compound_item.smiles
+            ctx['edit_compound_item_compound_id'] = edit_compound_item.compound_id
+            return  render(request, "edit_compound.html", ctx)
+        elif request.method == 'POST':
+            #update_edit_smiles = request.POST.get('update_edit_smiles')
+            update_origin_compound_id =  request.POST.get('edit_compound_item_compound_id')
+            if models.mol_props.objects.filter(compound_id=update_origin_compound_id).exists():
+                #update_item = mol_props.objects.get(compound_id=update_origin_compound_id)
+                models.mol_props.objects.filter(compound_id=update_origin_compound_id).delete()
+                mol_file_path = './register/template/static/mol_file/%s.mol' % update_origin_compound_id
+                mol_img_path = './register/template/static/mol_image/%s.png' % update_origin_compound_id
+                if os.path.exists(mol_file_path):
+                    os.remove(mol_file_path)
+                if os.path.exists(mol_img_path):
+                    os.remove(mol_img_path)
+                update_edit_smiles = request.POST.get('update_edit_smiles')
+                print(update_edit_smiles)
+                smiles = rdkit.Chem.CanonSmiles(update_edit_smiles, useChiral=1)
+                mol_mem = Chem.MolFromSmiles(smiles)
+                tpsa = round(Descriptors.TPSA(mol_mem), 3)
+                logp = round(Descriptors.MolLogP(mol_mem), 3)
+                mw = round(Descriptors.MolWt(mol_mem), 3)
+                mol = Chem.MolToMolBlock(mol_mem)
+                mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % update_origin_compound_id, 'w')
+                mol_file_tmp.write(mol)
+                mol_file_tmp.close()
+                mol_file_path = '/static/mol_file/%s.mol' % update_origin_compound_id
+                Draw.MolToFile(mol_mem, './register/template/static/mol_image/%s.png' % update_origin_compound_id)
+                img_path = '/static/mol_image/%s.png' % update_origin_compound_id
+                # print(mol)
+                fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
+                # print(fp)
+                if mol_props.objects.filter(smiles=smiles).exists():
+                    return HttpResponse('化合物已存在，请勿重复注册！')
+                else:
+                    molecule_insert = mol_props.objects.create(compound_id=update_origin_compound_id, smiles=smiles, mol_file=mol,
+                                                               TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path,
+                                                               fingerprint=fp, mol_file_path=mol_file_path)
+                    molecule_insert.save()
+                    return HttpResponse('更新成功')
+    else:
+        return redirect("/login/")
+
 
 
 def compoundlist(request):

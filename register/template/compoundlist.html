@@ -100,6 +100,8 @@
 		<th>Compound ID</th>
 		<th>Smiles</th>
         <th>MW</th>
+        <th>TPSA</th>
+        <th>xLogP</th>
         <th>Download</th>
 	</tr>
      {%for item in sublist %}
@@ -108,7 +110,10 @@
 		    <td>{{item.compound_id}}</td>
             <td>{{item.smiles}}</td>
             <td>{{item.MW}}</td>
+            <td>{{item.TPSA}}</td>
+            <td>{{item.xlogp}}</td>
             <td><a href="{{ item.mol_file_path }}">Download MOL</a></td>
+            <td><a href="/edit_compound/?edit_compound_id={{item.compound_id}}"><input type="submit" value="Edit"></a></td>
             <td><a href="/delete_compound/?delete_compound_id={{item.compound_id}}"><input type="submit" value="Delete"></a></td>
 	</tr>
      {% endfor %}
