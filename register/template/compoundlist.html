@@ -8,6 +8,10 @@
 <title>DocGrids - Documentation Bootstrap 5 HTML Template.</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--下三行是清理缓存加载-->
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+
 <style type="text/css">
 	td{
 		text-align:center;
@@ -30,7 +34,7 @@
 <link rel="stylesheet" href="/static/css/tiny-slider.css">
 <link rel="stylesheet" href="/static/css/main.css">
 </head>
-<body>
+
 
 
 <div class="preloader">
@@ -88,13 +92,13 @@
 </header>
 
 
-<section class="hero-area">
+<section class="hero-area" onLoad="javascript:document.compound_details.reset()">
 <div class="container">
 <div class="row align-items-center">
 <div class="col-lg-12 col-md-12 col-12">
 <div class="hero-content">
 
-<table border="1" cellspacing="0" cellpadding="5" align="center" width="100%" >
+<table name = 'compound_details' border="1" cellspacing="0" cellpadding="5" align="center" width="100%" >
 	<tr style="text-align:center">
         <th>Structure</th>
 		<th>Compound ID</th>
