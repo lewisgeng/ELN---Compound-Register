@@ -97,7 +97,7 @@
 	else // IE7
 		ketcher = document.frames['ifKetcher'].window.ketcher;
 	//window.console.info(ketcher.getSmiles());
-	ketcher.getSmiles().then((result) => {
+	ketcher.getSmiles(true).then((result) => {
         //alert(result);
 		document.getElementById('update_edit_smiles').value = result;
 		if (result.length == 0)

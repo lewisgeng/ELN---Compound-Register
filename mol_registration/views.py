@@ -1,24 +1,26 @@
 import operator
 import os
-import time
-
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from rdkit import Chem,DataStructs
 import rdkit
 from rdkit.Chem import AllChem,Descriptors,Draw
+from rdkit.Chem.Draw import rdMolDraw2D
 from .models import mol_props
 from . import models
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
-from django.contrib import messages
 
 # Create your views here.
 def registration(request):
     if request.method == 'POST':
         if request.POST.get('getsmiles') != '':
             #分子属性及ID
-            smiles = request.POST.get('getsmiles')
+            smiles_original = request.POST.get('getsmiles')
+            # convert to canonsmiles
+            smiles = rdkit.Chem.CanonSmiles(smiles_original)
             mol = Chem.MolFromSmiles(smiles)
+            d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+            #print(smiles)
             if mol:
                 tpsa = round(Descriptors.TPSA(mol),3)
                 logp = round(Descriptors.MolLogP(mol),3)
@@ -31,17 +33,17 @@ def registration(request):
                     id_2 = str(id_1).zfill(6)
                     compound_id = 'QL-' + id_2
                     # 分子图片输出
-                    Draw.MolToFile(mol, './register/template/static/mol_image/%s.png' % compound_id)
+                    d.DrawMolecule(mol)
+                    d.FinishDrawing()
+                    d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
                     img_path = '/static/mol_image/%s.png' % compound_id
                 else:
                     compound_id = 'QL-000001'
                     # 分子图片输出
-                    Draw.MolToFile(mol, './register/template/static/mol_image/%s.png' % compound_id)
+                    d.DrawMolecule(mol)
+                    d.FinishDrawing()
+                    d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
                     img_path = '/static/mol_image/%s.png' % compound_id
-                #分子图片输出
-                Draw.MolToFile(mol, './register/template/static/mol_image/%s.png' % compound_id)
-                img_path = '/static/mol_image/%s.png' % compound_id
-                #render进html页面
                 ctx = {}
                 ctx['tpsa'] = tpsa
                 ctx['logp'] = logp
@@ -67,7 +69,7 @@ def reg_result(request):
         img_path = request.POST.get('img_path')
         tpsa = request.POST.get('tpsa')
         #convert to canonsmiles
-        smiles = rdkit.Chem.CanonSmiles(smiles_original, useChiral=1)
+        smiles = rdkit.Chem.CanonSmiles(smiles_original)
         mol_mem = Chem.MolFromSmiles(smiles)
         mol = Chem.MolToMolBlock(mol_mem)
         mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % compound_id,'w')
@@ -153,7 +155,10 @@ def edit_compound(request):
                     mol_file_tmp.write(mol)
                     mol_file_tmp.close()
                     mol_file_path = '/static/mol_file/%s.mol' % update_origin_compound_id
-                    Draw.MolToFile(mol_mem, './register/template/static/mol_image/%s.png' % update_origin_compound_id)
+                    d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                    d.DrawMolecule(mol_mem)
+                    d.FinishDrawing()
+                    d.WriteDrawingText('./register/template/static/mol_image/%s.png' % update_origin_compound_id)
                     img_path = '/static/mol_image/%s.png' % update_origin_compound_id
                     # print(mol)
                     fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
@@ -191,7 +196,7 @@ def search(request):
     if request.session.get('is_login'):
         ##相似性结构检索，输入Similarity数值以及不输入Similarity数值
         if request.POST.get('getsearchsmiles') != '' and request.POST.get('property_name') =='Similarity' and request.POST.get('property_value') !='':
-            getsearchsmiles = request.POST.get('getsearchsmiles')
+            getsearchsmiles = rdkit.Chem.CanonSmiles(request.POST.get('getsearchsmiles'), useChiral=1)
             getsimilarity = float(request.POST.get('property_value'))
             getsearchmol = Chem.MolFromSmiles(getsearchsmiles)
             getsearchmol_fp = Chem.AllChem.GetMorganFingerprint(getsearchmol,2)
