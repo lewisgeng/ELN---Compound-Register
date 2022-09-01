@@ -143,8 +143,17 @@ function autopopulate() {
 <form class="search-form"  id ='submitsmiles' action = '/registration/' method = 'post' style='text-align:right'>
 	{% csrf_token %}
 	<input type="text" name='getsmiles' id ='getsmiles' style="display: none">
-    <a href='#' onclick="getifKetcher('ifKetcher');">Pre-register</a>
+    <a href='#' onclick="getifKetcher('ifKetcher');">Pre-register</a><br>
 </form>
+
+<!--upload文件并解析-->
+<div style="padding-top: 3em;float: right">
+<form accept-charset="UTF-8" enctype="multipart/form-data" action = '/upload/' method = 'post'>
+    {% csrf_token %}
+    <input type="file" name="file-uploader">
+    <input type="submit" value="upload a sdfile"/>
+</form>
+</div>
 
 <script type="text/javascript">
 function getifKetcher(ifKetcher){

@@ -4,11 +4,11 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from rdkit import Chem,DataStructs
 import rdkit
-from rdkit.Chem import AllChem,Descriptors,Draw
+from rdkit.Chem import AllChem,Descriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from .models import mol_props
 from . import models
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Create your views here.
 def registration(request):
@@ -16,12 +16,18 @@ def registration(request):
         if request.POST.get('getsmiles') != '':
             #分子属性及ID
             smiles_original = request.POST.get('getsmiles')
-            # convert to canonsmiles
-            smiles = rdkit.Chem.CanonSmiles(smiles_original)
-            mol = Chem.MolFromSmiles(smiles)
-            d = rdMolDraw2D.MolDraw2DCairo(300, 300)
-            #print(smiles)
-            if mol:
+            print(smiles_original)
+
+            mol_check = Chem.MolFromSmiles(smiles_original)
+            if mol_check is None:
+                html = '<center><p>化合物结构错误，请重新输入！</p></br><a href = \'/index/\'>返回首页</a></center>'
+                return HttpResponse(html)
+            else:
+                # convert to canonsmiles
+                smiles = rdkit.Chem.CanonSmiles(smiles_original)
+                print(smiles)
+                mol = Chem.MolFromSmiles(smiles)
+                #print(smiles)
                 tpsa = round(Descriptors.TPSA(mol),3)
                 logp = round(Descriptors.MolLogP(mol),3)
                 mw = round(Descriptors.MolWt(mol),3)
@@ -33,6 +39,7 @@ def registration(request):
                     id_2 = str(id_1).zfill(6)
                     compound_id = 'QL-' + id_2
                     # 分子图片输出
+                    d = rdMolDraw2D.MolDraw2DCairo(300, 300)
                     d.DrawMolecule(mol)
                     d.FinishDrawing()
                     d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
@@ -40,6 +47,7 @@ def registration(request):
                 else:
                     compound_id = 'QL-000001'
                     # 分子图片输出
+                    d = rdMolDraw2D.MolDraw2DCairo(300, 300)
                     d.DrawMolecule(mol)
                     d.FinishDrawing()
                     d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
@@ -51,9 +59,7 @@ def registration(request):
                 ctx['compound_id'] = compound_id
                 ctx['img_path'] = img_path
                 ctx['smiles'] = smiles
-                return render(request,'registration.html',locals())
-            else:
-                return HttpResponse('化合物结构错误，请重新输入！')
+                return render(request, 'registration.html', locals())
         else:
             return redirect("/index/")
 
@@ -80,11 +86,13 @@ def reg_result(request):
         fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
         #print(fp)
         if mol_props.objects.filter(smiles=smiles).exists():
-            return HttpResponse('化合物已存在，请勿重复注册！')
+            html = '<center><p>化合物已存在，请勿重复注册！</p></br><a href = \'/index/\'>返回首页</a></center>'
+            return HttpResponse(html)
         else:
             molecule_insert = mol_props.objects.create(compound_id=compound_id, smiles=smiles, mol_file=mol, TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path,fingerprint=fp, mol_file_path=mol_file_path)
             molecule_insert.save()
-            return HttpResponse('化合物注册成功！')
+            html = '<center><p>化合物注册成功！</p></br><a href = \'/compoundlist/\'>Compound List</a></center>'
+            return HttpResponse(html)
 
 def delete_compound(request):
     if request.session.get('is_login'):
@@ -107,7 +115,8 @@ def confirm_delete_compound(request):
                 os.remove(mol_file_path)
             if os.path.exists(mol_img_path):
                 os.remove(mol_img_path)
-            return HttpResponse("删除成功")
+            html = '<center><p>删除成功！</p></br><a href = \'/compoundlist/\'>返回</a></center>'
+            return HttpResponse(html)
         else:
             return redirect('/compoundlist/')
 
@@ -133,11 +142,13 @@ def edit_compound(request):
                 #print(update_edit_smiles)
                 mol_check= Chem.MolFromSmiles(update_edit_smiles)
                 if mol_check is None:
-                    return HttpResponse("结构有误，请重新输入！")
+                    html = '<center><p>结构有误，请重新输入！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % update_origin_compound_id
+                    return HttpResponse(html)
                 else:
                     if rdkit.Chem.CanonSmiles(update_edit_smiles, useChiral=1) == rdkit.Chem.CanonSmiles(
                             update_item.smiles, useChiral=1):
-                        return HttpResponse('结构未做任何修改！')
+                        html = '<center><p>结构未做任何修改！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % update_origin_compound_id
+                        return HttpResponse(html)
                     models.mol_props.objects.filter(compound_id=update_origin_compound_id).delete()
                     mol_file_path = './register/template/static/mol_file/%s.mol' % update_origin_compound_id
                     mol_img_path = './register/template/static/mol_image/%s.png' % update_origin_compound_id
@@ -164,7 +175,8 @@ def edit_compound(request):
                     fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
                     # print(fp)
                     if mol_props.objects.filter(smiles=smiles).exists():
-                        return HttpResponse('化合物已存在，请勿重复注册！')
+                        html = '<center><p>化合物已存在！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % update_origin_compound_id
+                        return HttpResponse(html)
                     else:
                         molecule_insert = mol_props.objects.create(compound_id=update_origin_compound_id, smiles=smiles, mol_file=mol,
                                                                    TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path,
@@ -220,7 +232,8 @@ def search(request):
                 search_result_sorted = sorted(search_result,key=operator.itemgetter('similarity'),reverse=True)
                 return render(request,'search.html',{'search_result_sorted':search_result_sorted})
         if request.POST.get('getsearchsmiles') != '' and request.POST.get('property_name') =='Similarity' and request.POST.get('property_value') =='':
-            return HttpResponse('请输入相似性数值！')
+            html = '<center><p>请输入相似性数值！</p></br><a href = \'/index/\'>返回首页</a></center>'
+            return HttpResponse(html)
 
         ##属性检索Compound ID
         if request.POST.get('property_name') =='Compound ID':
@@ -240,7 +253,8 @@ def search(request):
                 #else:
                  #   return HttpResponse('没有检索到包含此ID的化合物！')
             if len(search_result)==0:
-                return HttpResponse('没有检索到包含此ID的化合物！')
+                html = '<center><p>没有检索到包含此ID的化合物！</p></br><a href = \'/index/\'>返回首页</a></center>'
+                return HttpResponse(html)
             else:
                 search_result_sorted = sorted(search_result, key=operator.itemgetter('compound_id'), reverse=False)
             return render(request, 'search.html', {'search_result_sorted': search_result_sorted})
@@ -288,7 +302,8 @@ def search(request):
                 #else:
                  #   return HttpResponse('没有检索到包含此ID的化合物！')
             if len(search_result)==0:
-                return HttpResponse('没有检索到包此MW范围的化合物！')
+                html = '<center><p>没有检索到包此MW范围的化合物！</p></br><a href = \'/index/\'>返回首页</a></center>'
+                return HttpResponse(html)
             else:
                 search_result_sorted = sorted(search_result, key=operator.itemgetter('MW'), reverse=False)
             return render(request, 'search.html', {'search_result_sorted': search_result_sorted})
@@ -298,3 +313,70 @@ def search(request):
         return redirect("/login/")
 
 
+def upload(request):
+    #upload_user = request.session['username']
+    if request.method == 'GET':
+        #return render(request,'upload.html')
+        return HttpResponse("bad")
+    elif request.method == 'POST':
+        file_content =request.FILES.get("file-uploader", None)
+        if not file_content:
+            return HttpResponse("没有上传内容")
+        else:
+            if file_content.name.split('.')[1] != 'sdf':
+                return HttpResponse("不是sdf文件，请上传sdf文件！")
+            file_upload = os.path.join('./register/template/static/file_upload/',file_content.name)
+            #获取上传文件的文件名，并将其存储到指定位置
+            print(file_upload)
+            storage = open(file_upload,'wb+')       #打开存储文件
+            for chunk in file_content.chunks():       #分块写入文件
+                storage.write(chunk)
+            storage.close()
+            sdfs = [ sdf for sdf in Chem.SDMolSupplier(file_upload)]
+            for sdf in sdfs:
+                smiles_from_sdfile = Chem.MolToSmiles(sdf)
+                smiles = rdkit.Chem.CanonSmiles(smiles_from_sdfile, useChiral=1)
+                print(smiles)
+                mol = Chem.MolFromSmiles(smiles)
+                tpsa = round(Descriptors.TPSA(mol), 3)
+                logp = round(Descriptors.MolLogP(mol), 3)
+                mw = round(Descriptors.MolWt(mol), 3)
+                if mol_props.objects.all().count() != 0:
+                    compound_id_last = mol_props.objects.order_by('-compound_id').first().compound_id
+                    #print(compound_id_last)
+                    id = compound_id_last.split('-')[1]
+                    id_1 = int(id)+1
+                    id_2 = str(id_1).zfill(6)
+                    compound_id = 'QL-' + id_2
+                    # 分子图片输出
+                    d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                    d.DrawMolecule(mol)
+                    d.FinishDrawing()
+                    d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
+                    img_path = '/static/mol_image/%s.png' % compound_id
+                else:
+                    compound_id = 'QL-000001'
+                    # 分子图片输出
+                    d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                    d.DrawMolecule(mol)
+                    d.FinishDrawing()
+                    d.WriteDrawingText('./register/template/static/mol_image/%s.png' % compound_id)
+                    img_path = '/static/mol_image/%s.png' % compound_id
+                mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % compound_id, 'w')
+                mol_file_tmp.write(Chem.MolToMolBlock(mol))
+                mol_file_tmp.close()
+                mol_file_path = '/static/mol_file/%s.mol' % compound_id
+                mol_write = Chem.MolToMolBlock(mol)
+                    # print(mol)
+                fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius=2).ToBitString()
+                    # print(fp)
+                if mol_props.objects.filter(smiles=smiles).exists():
+                    html = '<center><p>化合物已存在，请勿重复注册！</p></br><a href = \'/index/\'>返回首页</a></center>'
+                    return HttpResponse(html)
+                else:
+                    molecule_insert = mol_props.objects.create(compound_id=compound_id, smiles=smiles, mol_file=mol_write,TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path,fingerprint=fp, mol_file_path=mol_file_path)
+                    molecule_insert.save()
+            html = '<center><p>sdf批量上传成功！</p></br><a href = \'/compoundlist/\'>Compound List</a></center>'
+            return HttpResponse(html)
+    else:
+        return HttpResponse("不支持的请求方法")
