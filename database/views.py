@@ -9,7 +9,8 @@ import cx_Oracle as cx
 
 def database(request):
      if request.session.get('is_login'):
-         return HttpResponse('数据库页面')
+        html = '<center><p>数据库页面</p></br><a href = \'/index/\'>返回首页</a></center>'
+        return HttpResponse(html)
      else:
          return redirect("/login/")
     #     if request.POST.get('dburl') != '' and request.POST.get('username') != '':

@@ -1,159 +1,105 @@
 {% load static %}
 <!DOCTYPE html>
-
-<html class="no-js" lang="zxx">
+<html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>DocGrids - Documentation Bootstrap 5 HTML Template.</title>
+<title>Register</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style type="text/css">
-	td{
-		text-align:center;
-	}
-	th{
-		text-align:center;
-	}
-	a{
-		text-decoration: none;
-	}
-	img{
-		width: 100px;height:100px;
-		align: "center";
-	}
-</style>
-
-<link rel="stylesheet" href="/static/css/bootstrap.min.css">
-<link rel="stylesheet" href="/static/css/LineIcons.3.0.css">
-<link rel="stylesheet" href="/static/css/animate.css">
-<link rel="stylesheet" href="/static/css/tiny-slider.css">
-<link rel="stylesheet" href="/static/css/main.css">
+<script src="/static/js/jquery.min.js"></script>
+<script type="text/javascript">
+    function getifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles(true).then((result) => {
+        //alert(result);
+		document.getElementById('update_edit_smiles').value = result;
+		if (result.length == 0)
+		    alert('没有获取到化合物结构，请重新输入! ')
+        else
+		    window.console.info(document.getElementById('update_edit_smiles').value )
+		    document.getElementById('submit_update_smiles').submit();
+      })
+		}
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
+
+
 <body>
 
-
-<div class="preloader">
-<div class="preloader-inner">
-<div class="preloader-icon">
-<span></span>
-<span></span>
-</div>
-</div>
-</div>
-
-
-<header class="header navbar-area">
 <div class="container">
-<div class="row align-items-center">
-<div class="col-lg-12">
-<div class="nav-inner">
 
-<nav class="navbar navbar-expand-lg">
-<a class="navbar-brand" href="">
-<img src="/static/picture/logo.svg" alt="Logo">
-</a>
-<button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-<span class="toggler-icon"></span>
-<span class="toggler-icon"></span>
-<span class="toggler-icon"></span>
-</button>
-<div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
-<ul id="nav" class="navbar-nav ms-auto">
-<li class="nav-item">
-<a href="/index" aria-label="Toggle navigation">Home</a>
-</li>
-<li class="nav-item">
-<a href="/compoundlist" class="active" aria-label="Toggle navigation">Compound List</a>
-</li>
-<li class="nav-item">
-<a href="/database" aria-label="Toggle navigation">Database</a>
-</li>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><i>Register</i></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index/">Home </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/compoundlist">Compound List<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/search">Search</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Configuration
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="">action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="dropdown-item" href="#">User Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
 </ul>
-</div>
-<div class="button">
-<a href="/user_register" class="btn">Register</a>
-</div>
-
-<div class="button">
-<a href="/logout" class="btn">Logout</a>
-</div>
-
+  </div>
 </nav>
-
-</div>
-</div>
-</div>
-</div>
-</header>
-
-
-<section class="hero-area">
-<div class="container">
-<div class="row align-items-center">
-<div class="col-lg-12 col-md-12 col-12">
-<div class="hero-content">
-<center>
-<p>是否确认删除：{{ delete_compound_id }}</p>
-
-<td><a href="/confirm_delete_compound/?delete_compound_id={{ delete_compound_id }}&confirm_delete=1"><input type="submit" value="Confirm"></a></td>
-<td><a href="/confirm_delete_compound/?delete_compound_id={{ delete_compound_id }}&confirm_delete=0"><input type="submit" value="No"></a></td>
+<div class="col-lg-12 text-center mt-5">
+    <p>Delete Compound: {{ delete_compound_id }}</p>
+    <a>
+        <img src="{{image_path}}" style="width: 20%;border: 1px dashed #eee;"><br>
+    </a>
+    <a href="/confirm_delete_compound/?delete_compound_id={{ delete_compound_id }}&confirm_delete=1">
+        <button class="btn btn-danger">Confirm</button>
+    </a>
+    <a href="/confirm_delete_compound/?delete_compound_id={{ delete_compound_id }}&confirm_delete=0">
+        <button class="btn btn-info">No</button>
+    </a>
 </center>
 </div>
 </div>
-</div>
-
-</div>
-</div>
-</section>
-
-
-
-
-
-<script src="/static/js/bootstrap.min.js"></script>
-<script src="/static/js/wow.min.js"></script>
-<script src="/static/js/tiny-slider.js"></script>
-<script src="/static/js/main.js"></script>
-<script>
-        //========= testimonial
-        tns({
-            container: '.testimonial-slider',
-            items: 3,
-            slideBy: 'page',
-            autoplay: false,
-            mouseDrag: true,
-            gutter: 0,
-            nav: true,
-            controls: false,
-            controlsText: ['<i class="lni lni-arrow-left"></i>', '<i class="lni lni-arrow-right"></i>'],
-            responsive: {
-                0: {
-                    items: 1,
-                },
-                540: {
-                    items: 1,
-                },
-                768: {
-                    items: 1,
-                },
-                992: {
-                    items: 1,
-                },
-                1170: {
-                    items: 1,
-                }
-            }
-        });
-
-
-
-        // WOW active
-        new WOW().init();
-    </script>
 </body>
 </html>
-
-
-
-

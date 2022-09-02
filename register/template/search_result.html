@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Register</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/static/js/jquery.min.js"></script>
+<style type="text/css">
+	.wrapper {
+	margin-top: 80px;
+	margin-bottom: 20px;
+}
+
+.form-signin {
+  max-width: 420px;
+  padding: 30px 38px 66px;
+  margin: 0 auto;
+  #background-color: #eee;
+  #border: 3px dotted rgba(0,0,0,0.1);
+  }
+
+.form-signin-heading {
+  text-align:center;
+  margin-bottom: 30px;
+}
+
+.form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+}
+
+input[type="text"] {
+  margin-bottom: 0px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+input[type="password"] {
+  margin-bottom: 20px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.table tr td{
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.table tr th{
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.colorgraph {
+  height: 7px;
+  border-top: 0;
+  background: #c4e17f;
+  border-radius: 5px;
+  background-image: -webkit-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: -moz-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: -o-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: linear-gradient(to right, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="text/javascript">
+function hidesmiles() {
+    $('tr').find('th:eq(2)').hide();
+    $('tr').find('td:eq(2)').hide();
+    $('#showsmiles').show();
+    $('#hidesmiles').hide();
+}
+function showsmiles() {
+    $('tr').find('th:eq(2)').show();
+    $('tr').find('td:eq(2)').show();
+    $('#hidesmiles').show();
+    $('#showsmiles').hide();
+}
+function alertsmiles(){
+    var tdSeq = $(this).parent().find("td").index($(this)[0]);
+    var trSeq = $(this).parent().parent().find("tr").index($(this).parent()[0]);
+
+}
+</script>
+</head>
+
+
+<body>
+<div class = "container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><i>Register</i></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index/">Home</a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="/compoundlist">Compound List </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/search">Search <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Configuration
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="">action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="dropdown-item" href="#">User Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+</ul>
+  </div>
+</nav>
+
+<table class="table">
+{#  <caption>#}
+{#        <center>#}
+{#        <span style="margin:0 auto">#}
+{#            {% if sublist.has_previous %}#}
+{#                <a href="?page={{ sublist.previous_page_number }}">previous</a>#}
+{#            {% endif %}#}
+{##}
+{#            <span class="current">#}
+{#                Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}#}
+{#            </span>#}
+{##}
+{#            {% if sublist.has_next %}#}
+{#                <a href="?page={{ sublist.next_page_number }}">next</a>#}
+{#            {% endif %}#}
+{#        </span>#}
+{#        </center>#}
+{#  </caption>#}
+  <thead>
+    <tr>
+        <th class="col-2 pl-5">Structure</th>
+		<th class="col-2">Compound ID</th>
+		<th id="smiles_title" style="display: none">Smiles</th>
+        <th>MW</th>
+        <th>TPSA</th>
+        <th>LogP</th>
+{#        <th class="text-right"><button class="btn btn-light" id = 'hidesmiles' style= 'display: none' onclick="hidesmiles()">Hide Smiles</button><button class="btn btn-light text-right" id = 'showsmiles' onclick="showsmiles()">Show Smiles</button></th>#}
+        <th></th>
+	</tr>
+  </thead>
+  <tbody>
+        {%for item in search_result_sorted %}
+        <tr>
+                <td class="col-2"><img src="{{item.img_file}}" style="width: 80%;"></td>
+                <td>{{item.compound_id}}</td>
+                <td id="smiles_domain" style="display: none">{{item.smiles}}</td>
+                <td>{{item.MW}}</td>
+                <td>{{item.TPSA}}</td>
+                <td>{{item.xlogp}}</td>
+{#                <td><a href="{{ item.mol_file_path }}">Download MOL</a></td>#}
+                <td class="text-right">
+                <a href="{{ item.mol_file_path }}">
+                    <button type="button" class="btn btn-info btn-sm" type="submit">Mol</button>
+                </a>
+                <a id='alertsmiles' onclick = alert('{{ item.smiles }}')>
+                    <button class="btn btn-info btn-sm" >Smi</button>
+                </a>
+            </td>
+        </tr>
+         {% endfor %}
+  </tbody>
+</table>
+
+</div>
+</body>
+</html>

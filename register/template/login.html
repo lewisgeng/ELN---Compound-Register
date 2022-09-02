@@ -1,164 +1,86 @@
 {% load static %}
 <!DOCTYPE html>
-
-<html class="no-js" lang="zxx">
+<html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>DocGrids - Documentation Bootstrap 5 HTML Template.</title>
+<title>Register</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/static/js/jquery.min.js"></script>
+<style type="text/css">
+	.wrapper {
+	margin-top: 80px;
+	margin-bottom: 20px;
+}
 
+.form-signin {
+  max-width: 420px;
+  padding: 30px 38px 66px;
+  margin: 0 auto;
+  #background-color: #eee;
+  #border: 3px dotted rgba(0,0,0,0.1);
+  }
 
-<link rel="stylesheet" href="/static/css/bootstrap.min.css">
-<link rel="stylesheet" href="/static/css/LineIcons.3.0.css">
-<link rel="stylesheet" href="/static/css/animate.css">
-<link rel="stylesheet" href="/static/css/tiny-slider.css">
-<link rel="stylesheet" href="/static/css/main.css">
+.form-signin-heading {
+  text-align:center;
+  margin-bottom: 30px;
+}
+
+.form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+}
+
+input[type="text"] {
+  margin-bottom: 0px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+input[type="password"] {
+  margin-bottom: 20px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.colorgraph {
+  height: 7px;
+  border-top: 0;
+  background: #c4e17f;
+  border-radius: 5px;
+  background-image: -webkit-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: -moz-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: -o-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+  background-image: linear-gradient(to right, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
+
+
 <body>
+<div class = "container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#"><i>Register</i></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
 
-
-<div class="preloader">
-<div class="preloader-inner">
-<div class="preloader-icon">
-<span></span>
-<span></span>
+	<div class="wrapper">
+		<form action="" method="post" name="Login_Form" class="form-signin" action = '/login/'>
+		    <h3 class="form-signin-heading">User Login</h3>
+			  <hr class="colorgraph"><br>
+              {% csrf_token %}
+			  <input type="text" class="form-control" name="username" placeholder="Username" required="" autofocus="" />
+			  <input type="password" class="form-control" name="password" placeholder="Password" required=""/>
+			  <button class="btn btn-success btn-lg btn-block"  name="Submit" value="Login" type="Submit">Login</button>
+		</form>
+	</div>
 </div>
-</div>
-</div>
-
-
-<header class="header navbar-area">
-<div class="container">
-<div class="row align-items-center">
-<div class="col-lg-12">
-<div class="nav-inner">
-
-<nav class="navbar navbar-expand-lg">
-<a class="navbar-brand" href="">
-<img src="/static/picture/logo.svg" alt="Logo">
-</a>
-<button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-<span class="toggler-icon"></span>
-<span class="toggler-icon"></span>
-<span class="toggler-icon"></span>
-</button>
-<div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
-<ul id="nav" class="navbar-nav ms-auto">
-<li class="nav-item">
-<a href="" class="active" aria-label="Toggle navigation">Home</a>
-</li>
-<li class="nav-item">
-<a href="/compoundlist" aria-label="Toggle navigation">Compound List</a>
-</li>
-<li class="nav-item">
-<a href="/database" aria-label="Toggle navigation">Database</a>
-</li>
-</ul>
-</div> 
-<div class="button">
-<a href="/user_register" class="btn">Register</a>
-</div>
-
-<div class="button">
-<a href="/logout" class="btn">Logout</a>
-</div>
-<div class="button">
-<a class="btn">{{aa}}</a>
-</div>
-</nav>
-
-</div>
-</div>
-</div> 
-</div> 
-</header>
-
-
-<section class="hero-area">
-<div class="container">
-<div class="row align-items-center">
-<div class="col-lg-6 col-md-12 col-12">
- <div class="hero-content">
-<h2>Could you please login first to enter the Chemical World!</h2>
-<p>Thinking about having an online documentation or
-support system for your new startup? The DocsGrids have everythings you need to develop your
-own help
-center.</p>
-<!-- <form class="search-form" action = 'search' method = 'get'>
-	<input type="text" placeholder="Start typing your search…" name='search_content'>
-	<button type="submit">Search</button>
-</form>
--->
-<form class="search-form" action = '/login/' method = 'post'>
-	{% csrf_token %}
-	<input type="text" placeholder="Username" name='username'>
-	<input type="password" placeholder="Password" name='password'>
-	<button type="submit">Login</button>
-</form>
-<!-- <ul class="popular-tag">
-	<li><a>{{ rlt }}</a></li>
-</ul>
--->
-<ul class="popular-tag">
-<li>Popular Tag:</li>
-<li><a href="javascript:void(0)">WordPress</a></li>
-<li><a href="javascript:void(0)">HTML</a></li>
-<li><a href="javascript:void(0)">Footer</a></li>
-</ul>
-</div>
-</div>
-<div class="col-lg-6 col-12">
-<div class="hero-image">
-<img src="/static/picture/call.svg" alt="#">
-</div>
-</div>
-</div>
-</div>
-</section>
-
-
-
-<script src="/static/js/bootstrap.min.js"></script>
-<script src="/static/js/wow.min.js"></script>
-<script src="/static/js/tiny-slider.js"></script>
-<script src="/static/js/main.js"></script>
-<script>
-        //========= testimonial 
-        tns({
-            container: '.testimonial-slider',
-            items: 3,
-            slideBy: 'page',
-            autoplay: false,
-            mouseDrag: true,
-            gutter: 0,
-            nav: true,
-            controls: false,
-            controlsText: ['<i class="lni lni-arrow-left"></i>', '<i class="lni lni-arrow-right"></i>'],
-            responsive: {
-                0: {
-                    items: 1,
-                },
-                540: {
-                    items: 1,
-                },
-                768: {
-                    items: 1,
-                },
-                992: {
-                    items: 1,
-                },
-                1170: {
-                    items: 1,
-                }
-            }
-        });
-
-
-
-        // WOW active
-        new WOW().init();
-    </script>
 </body>
 </html>

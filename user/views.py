@@ -5,7 +5,8 @@ from .models import UsersInfo
 from mol_registration.models import mol_props
 from django.contrib.auth.hashers import make_password, check_password
 # Create your views here.
-
+import datetime
+from time import strftime
 
 def user_register(request):
     return render(request, 'user_register.html')
@@ -66,10 +67,12 @@ def index(request):
         #for property in property_fields:
             #print(property.name)
         #查询时选择下拉框，关联分子属性的item
-        ctx['compound_id'] = 'Compound ID'
-        ctx['MW'] = 'MW'
-        ctx['TPSA'] = 'TPSA'
-        ctx['logp'] = 'LogP'
+        # ctx['compound_id'] = 'Compound ID'
+        # ctx['MW'] = 'MW'
+        # ctx['TPSA'] = 'TPSA'
+        # ctx['logp'] = 'LogP'
+        now = datetime.datetime.now()
+        ctx['register_date']= now.strftime("%Y-%m-%d %H:%M")
         return render(request,'index.html',ctx)
     else:
         return redirect("/login/")
