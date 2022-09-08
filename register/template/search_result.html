@@ -1,13 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>Register</title>
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="/static/js/jquery.min.js"></script>
+{% extends "base.html" %}
+
+{% block script %}
+
 <style type="text/css">
 	.wrapper {
 	margin-top: 80px;
@@ -67,8 +61,7 @@ input[type="password"] {
   background-image: linear-gradient(to right, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
 }
 </style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
 function hidesmiles() {
     $('tr').find('th:eq(2)').hide();
@@ -88,9 +81,9 @@ function alertsmiles(){
 
 }
 </script>
-</head>
+{% endblock %}
 
-
+{% block mainbody %}
 <body>
 <div class = "container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -112,10 +105,10 @@ function alertsmiles(){
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Configuration
+          Setting
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="">action</a>
+          <a class="dropdown-item" href="/custome_fields/">Configuration</a>
           <a class="dropdown-item" href="#">Another action</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
@@ -129,11 +122,12 @@ function alertsmiles(){
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{ username }}
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
+            {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/logout">Logout</a>
-          <a class="dropdown-item" href="#">User Profile</a>
+          <a class="dropdown-item" href="/profile/">User Profile</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
@@ -143,28 +137,13 @@ function alertsmiles(){
 </nav>
 
 <table class="table">
-{#  <caption>#}
-{#        <center>#}
-{#        <span style="margin:0 auto">#}
-{#            {% if sublist.has_previous %}#}
-{#                <a href="?page={{ sublist.previous_page_number }}">previous</a>#}
-{#            {% endif %}#}
-{##}
-{#            <span class="current">#}
-{#                Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}#}
-{#            </span>#}
-{##}
-{#            {% if sublist.has_next %}#}
-{#                <a href="?page={{ sublist.next_page_number }}">next</a>#}
-{#            {% endif %}#}
-{#        </span>#}
-{#        </center>#}
-{#  </caption>#}
+
   <thead>
     <tr>
         <th class="col-2 pl-5">Structure</th>
 		<th class="col-2">Compound ID</th>
 		<th id="smiles_title" style="display: none">Smiles</th>
+        <th>Similarity</th>
         <th>MW</th>
         <th>TPSA</th>
         <th>LogP</th>
@@ -178,6 +157,7 @@ function alertsmiles(){
                 <td class="col-2"><img src="{{item.img_file}}" style="width: 80%;"></td>
                 <td>{{item.compound_id}}</td>
                 <td id="smiles_domain" style="display: none">{{item.smiles}}</td>
+                <td>{{ item.similarity }}</td>
                 <td>{{item.MW}}</td>
                 <td>{{item.TPSA}}</td>
                 <td>{{item.xlogp}}</td>
@@ -196,5 +176,4 @@ function alertsmiles(){
 </table>
 
 </div>
-</body>
-</html>
+{% endblock %}

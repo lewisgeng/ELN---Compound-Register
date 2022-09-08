@@ -1,31 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>Register</title>
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="/static/js/jquery.min.js"></script>
+{% extends "base.html" %}
+
+{% block script %}
 <style type="text/css">
-	.wrapper {
-	margin-top: 80px;
-	margin-bottom: 20px;
-}
-
-.form-signin {
-  max-width: 420px;
-  padding: 30px 38px 66px;
-  margin: 0 auto;
-  #background-color: #eee;
-  #border: 3px dotted rgba(0,0,0,0.1);
-  }
-
-.form-signin-heading {
-  text-align:center;
-  margin-bottom: 30px;
-}
 
 .form-control {
   position: relative;
@@ -49,26 +25,19 @@ input[type="password"] {
 .table tr td{
     vertical-align: middle;
     font-size: 12px;
+    height: 7em;
 }
 
 .table tr th{
     vertical-align: middle;
-    font-size: 14px;
+    font-size: 13px;
 }
-
-.colorgraph {
-  height: 7px;
-  border-top: 0;
-  background: #c4e17f;
-  border-radius: 5px;
-  background-image: -webkit-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
-  background-image: -moz-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
-  background-image: -o-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
-  background-image: linear-gradient(to right, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
-}
+ img:hover{
+     transform:scale(3,3);
+     z-index:auto  ;
+ }
 </style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
 function hidesmiles() {
     $('tr').find('th:eq(2)').hide();
@@ -87,13 +56,28 @@ function alertsmiles(){
     var trSeq = $(this).parent().parent().find("tr").index($(this).parent()[0]);
 
 }
+
+window.onload = function(){
+    var table1 = document.getElementById('table1')
+    var rows = table1.rows;
+    for (var i = 1; i< rows.length;i++) {
+        rows[i].onmouseover = function(){
+            $(this).find("#action_ico").show()
+        }
+        rows[i].onmouseout = function(){
+            $(this).find("#action_ico").hide()
+        }
+    }
+}
 </script>
-</head>
+{% endblock %}
 
 
-<body>
+
+{% block mainbody %}
+
 <div class = "container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#"><i>Register</i></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -112,10 +96,10 @@ function alertsmiles(){
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Configuration
+          Setting
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="">action</a>
+          <a class="dropdown-item" href="/custome_fields/">Configuration</a>
           <a class="dropdown-item" href="#">Another action</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
@@ -129,11 +113,12 @@ function alertsmiles(){
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{ username }}
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
+            {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/logout">Logout</a>
-          <a class="dropdown-item" href="#">User Profile</a>
+          <a class="dropdown-item" href="/profile/">User Profile</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
@@ -142,65 +127,89 @@ function alertsmiles(){
   </div>
 </nav>
 
-<table class="table">
-  <caption>
-        <center>
-        <span style="margin:0 auto">
-            {% if sublist.has_previous %}
-                <a href="?page={{ sublist.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}
-            </span>
-
-            {% if sublist.has_next %}
-                <a href="?page={{ sublist.next_page_number }}">next</a>
-            {% endif %}
-        </span>
-        </center>
-  </caption>
-  <thead>
-    <tr>
-        <th class="col-2 pl-5">Structure</th>
-		<th class="col-2">Compound ID</th>
-		<th id="smiles_title" style="display: none">Smiles</th>
-        <th>MW</th>
-        <th>TPSA</th>
-        <th>LogP</th>
-{#        <th class="text-right"><button class="btn btn-light" id = 'hidesmiles' style= 'display: none' onclick="hidesmiles()">Hide Smiles</button><button class="btn btn-light text-right" id = 'showsmiles' onclick="showsmiles()">Show Smiles</button></th>#}
-        <th></th>
-	</tr>
-  </thead>
-  <tbody>
+<table class="table text-center table-hover table-sm"  id="table1">
+<thead>
+<tr>
+    <th class="col-2">Structure</th>
+    <th>Cmp.ID</th>
+    <th id="smiles_title" style="display: none">Smiles</th>
+    <th>Project</th>
+    <th>Registrar</th>
+    <th>Supplier</th>
+    <th>Weight</th>
+    <th>Unit</th>
+    <th class="col-2">Supplier Ref.</th>
+    <th class="col-2">Reg. Time</th>
+    <th>Salt</th>
+    <th>Stoich</th>
+    <th>Appearance</th>
+    <th>Location</th>
+    <th>Chiral</th>
+    <th>MW</th>
+    <th>TPSA</th>
+    <th>LogP</th>
+    <th>Comments</th>
+    <th>&nbsp&nbsp&nbsp&nbsp&nbsp;</th>
+</tr>
+</thead>
+<tbody>
      {%for item in sublist %}
 	<tr>
-            <td class="col-2"><img src="{{item.img_file}}" style="width: 80%;"></td>
+            <td class="col-2"><img src="{{item.compound.img_file}}" style="width: 80%;"></td>
 		    <td>{{item.compound_id}}</td>
             <td id="smiles_domain" style="display: none">{{item.smiles}}</td>
-            <td>{{item.MW}}</td>
-            <td>{{item.TPSA}}</td>
-            <td>{{item.xlogp}}</td>
-{#            <td><a href="{{ item.mol_file_path }}">Download MOL</a></td>#}
-            <td class="text-right">
-                <a href="/edit_compound/?edit_compound_id={{item.compound_id}}">
-                    <button type="button" class="btn btn-success btn-sm" type="submit">Edit</button>
+            <td>{{item.project}}</td>
+            <td>{{item.registrar}}</td>
+            <td>{{item.from_supplier}}</td>
+            <td>{{item.weight}}</td>
+            <td>{{item.weight_unit}}</td>
+            <td>{{item.supplier_ref}}</td>
+            <td>{{item.registration_time}}</td>
+            <td>{{item.salt}}</td>
+            <td>{{item.stoich}}</td>
+            <td>{{item.appearance}}</td>
+            <td>{{item.location}}</td>
+            <td>{{item.chiral}}</td>
+            <td>{{item.compound.MW}}</td>
+            <td>{{item.compound.TPSA}}</td>
+            <td>{{item.compound.xlogp}}</td>
+            <td>{{item.comments}}</td>
+            <td class="text-center" id="action_ico" style="display: none">
+                <a href="/edit_compound/?edit_compound_id={{item.compound_id}}" title="Edit" methods="GET">
+                   <i class="fa fa-edit"></i>
                 </a>
-                <a href="/delete_compound/?delete_compound_id={{item.compound_id}}">
-                    <button type="button" class="btn btn-danger btn-sm" type="submit">Delete</button>
+                <a href="/delete_compound/?delete_compound_id={{item.compound_id}}" title="Delete" methods="GET">
+                    <i class="fa fa-trash-o"></i>
                 </a>
-                <a href="{{ item.mol_file_path }}">
-                    <button type="button" class="btn btn-info btn-sm" type="submit">Mol</button>
+                <br>
+                <a href="{{ item.compound.mol_file_path }}" title="Download Mol" methods="GET">
+                    <i class="fa fa-download"></i>
                 </a>
-                <a id='alertsmiles' onclick = alert('{{ item.smiles }}')>
-                    <button class="btn btn-info btn-sm" >Smi</button>
+                <a href='' style="cursor: pointer" onclick = alert('{{ item.compound.smiles }}') title="Smiles" methods="GET">
+                    <i class="fa fa-clone"></i>
                 </a>
             </td>
 	</tr>
      {% endfor %}
-  </tbody>
+</tbody>
 </table>
-
+  <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {% if sublist.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ sublist.previous_page_number }}" tabindex="-1">Previous</a>
+        </li>
+        {% endif %}
+            <li class="page-item">
+        <a class="page-link" href="#">Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}</a>
+{#        Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}#}
+        </li>
+        {% if sublist.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ sublist.next_page_number }}">Next</a>
+        </li>
+        {% endif %}
+      </ul>
+</nav>
 </div>
-</body>
-</html>
+{% endblock %}

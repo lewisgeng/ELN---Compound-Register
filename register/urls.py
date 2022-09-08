@@ -15,22 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,re_path
-from user import views
 import user.views as user_view
 import mol_registration.views as mol_registration_view
-import database.views as database_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('index/', views.index),
-    path('contact', views.contact),
+
 
     #app-user相关的url
-    path('login/', views.login),
-    path('user_register', views.user_register),
-    path('register_result', views.register),
-    path('logout', views.logout),
+    path('login/', user_view.login),
+    path('logout', user_view.logout),
+    path('user_admin/', user_view.user_admin),
+    path('profile/', user_view.profile),
+    path('profile/avatar', user_view.avatar),
+
 
     #app-mol_register相关的url
+    path('index/', mol_registration_view.index),
     path('registration/', mol_registration_view.registration),
     path('reg_result/', mol_registration_view.reg_result),
     path('search/', mol_registration_view.search),
@@ -40,8 +41,8 @@ urlpatterns = [
     path('confirm_delete_compound/', mol_registration_view.confirm_delete_compound),
     path('edit_compound/', mol_registration_view.edit_compound),
     path('upload/', mol_registration_view.upload),
-
+    path('custome_fields/', mol_registration_view.custome_fields)
     #app-database相关的url
-    path('database/', database_view.database),
+    #path('index/', database_view.database),
 
 ]

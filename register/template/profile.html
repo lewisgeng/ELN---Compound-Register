@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript">
+    function reset_password() {
+        if ($('#check_box input[type=checkbox]').is(':checked')){
+            $('#reset_password_div').show()
+        }
+        else
+            $('#reset_password_div').hide()
+}
+    function loadFile(file){
+    $("#filename").html(file.name);
+}
+</script>
+{% endblock %}
+
+
+
+
+{% block mainbody %}
+
+<div class="container">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><i>Register</i></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index/">Home </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Compound List<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/search">Search</a>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Setting
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/custome_fields/">Configuration</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
+            {{ username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="dropdown-item" href="">User Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+</ul>
+</div>
+</nav>
+<div class="col-12 row">
+    <div class="card col-3 mt-3" style="width: 12rem;">
+      <img class="card-img-top" src="{{ user_info.avatar_file_path }}" alt="Card image cap" style="border-radius: 50%;border:1px solid #cccccc">
+        <div class="input-group">
+          <div class="custom-file">
+            <form  id='avatar_upload' accept-charset="UTF-8" enctype="multipart/form-data" action = '/profile/avatar' method = 'post'>
+                    {% csrf_token %}
+                    <input type="file" onchange="loadFile(this.files[0])" class="custom-file-input" name="avatar_file" id="avatar_file" accept="image/jpg,image/png,image/gif">
+                    <label id = "filename" class="custom-file-label" for="avatar_file" style="font-size: 15px">Choose file</label>
+            </form>
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-success btn-sm" type="submit" onclick="document.getElementById('avatar_upload').submit()">Upload</button>
+          </div>
+        </div>
+
+      <div class="card-body text-center">
+        <h5 class="card-title text-center">{{ user_info.username }}</h5>
+        <p class="card-text">{{ user_info.email }}</p>
+      </div>
+    </div>
+    <div class="col-9">
+        <form id ='user_profile' action = '/profile/' method = 'post'>
+            {% csrf_token %}
+          <div class="form-row">
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault01">First name</label>
+              <input type="text" class="form-control" id="validationDefault01" placeholder="First name" value="{{ user_info.firstname }}" disabled>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault02">Last name</label>
+              <input type="text" class="form-control" id="validationDefault02" placeholder="Last name" value="{{ user_info.lastname }}" disabled>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefaultUsername">Username</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroupPrepend2">@</span>
+                </div>
+                <input type="text" class="form-control" id="validationDefaultUsername" value= {{ username }} aria-describedby="inputGroupPrepend2" disabled>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault04">Role</label>
+              <input type="text" class="form-control" id="validationDefault04" placeholder="Role" value="{{ user_info.role }}" disabled>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault05">Registration Time</label>
+              <input type="text" class="form-control" id="validationDefault05" placeholder="Registration Time" value="{{ user_info.register_time }}" disabled>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault03">Email</label>
+              <input name='email' type="text" class="form-control" id="validationDefault03" placeholder="Email" value="{{ user_info.email }}" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <div id="check_box" class="form-check">
+              <input onchange="reset_password()" class="form-check-input" type="checkbox" value="" id="invalidCheck2">
+              <label class="form-check-label" for="invalidCheck2">
+                Reset Password
+              </label>
+            </div>
+          </div>
+
+          <div id = 'reset_password_div' class="form-row" style="display: none">
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault04">Password</label>
+              <input name="oldpassword" type="password" class="form-control" id="oldpassword" placeholder="Password" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault05">New Password</label>
+              <input name="newpassword1" type="password" class="form-control" id="newpassword1" placeholder="New Password" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validationDefault03">New Password</label>
+              <input name="newpassword2" type="password" class="form-control" id="newpassword2" placeholder="Repeat Password" required>
+            </div>
+          </div>
+           <button class="btn btn-primary" type="submit">Submit</button>
+           <div id="check_box" class="form-check text-center">
+              <label class="form-check-label" for="invalidCheck2">
+                  {{ message }}
+              </label>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}

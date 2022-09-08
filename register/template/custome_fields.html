@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript">
+    function getifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles(true).then((result) => {
+        //alert(result);
+		document.getElementById('update_edit_smiles').value = result;
+		if (result.length == 0)
+		    alert('没有获取到化合物结构，请重新输入! ')
+        else
+		    window.console.info(document.getElementById('update_edit_smiles').value )
+		    document.getElementById('submit_update_smiles').submit();
+      })
+		}
+
+    function custome_field_func(){
+
+        custom_field = document.getElementById('custome_field').value;
+        url_string = '/custome_fields/?query_field='
+        custom_url =  url_string + custom_field
+        //window.console.info(document.getElementById('custome_field').value )
+        window.location.href = custom_url
+    }
+
+    function delete_field_value(){
+        delete_field = document.getElementById('custome_field').value;
+        delete_value = '';
+        $("#dxbox td input[type=checkbox]:checked").each(function(){
+            delete_value += $(this).val()+','
+            });
+       // alert(delete_value)
+        delete_url = '?delete_field='+delete_field+'&delete_value='+delete_value
+        //delete_url =  url_string + delete_value
+        delete_url = delete_url.replace(/#/g,"-");
+        //alert(delete_url)
+        window.location.href = delete_url
+    }
+
+
+   function delete_button_action(){
+        if ($('#dxbox td input[type=checkbox]').is(':checked')){
+            $('#delete_button').show()
+        }
+        else
+            $('#delete_button').hide()
+    }
+</script>
+{% endblock %}
+
+{% block mainbody %}
+<div class="container">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><i>Register</i></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index/">Home </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Compound List<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/search">Search</a>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Setting
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/custome_fields/">Configuration</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
+            {{ username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="dropdown-item" href="/profile/">User Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+</ul>
+  </div>
+</nav>
+
+<div class="col-12 row table">
+    <div class="col-2 list-group text-center">
+      <a href="" class="list-group-item list-group-item-action" style="background-color: #f8f9fa ">Data Field</a>
+      <a href="/user_admin/" class="list-group-item list-group-item-action">User Admin</a>
+    </div>
+
+    <table class="col-10" id="custome_field_table">
+        <tr id = 'dxbox'>
+            <td class="col-12">
+                <div class="form-group input-group col-12">
+                        <form class="search-form" id ='custome_fields' action = '/custome_fields/' method = 'post' >
+                            {% csrf_token %}
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-light" disabled>Custome Field</button>
+                                </div>
+                                <select class="selectpicker show-tick" data-live-search ="true" data-width="auto" id = "custome_field" name="custome_field" onchange="custome_field_func()">
+                                        <option value="{{ query_field }}" selected>Select a field: {{ query_field }}</option>
+                                    {%for item in fieldlist %}
+                                        {% if item != 'compound' %}
+                                        <option>{{ item }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <a><button type="button" class="btn btn-outline-secondary ml-2" onclick="custome_field_func()">Query</button></a>
+                                <div class="input-group-prepend ml-4">
+                                    <button class="btn btn-light" disabled>New Value</button>
+                                </div>
+                                <input type="text" class="form-control" name="custome_value" style="border: 2px solid #f8f9fa">
+                                <button type="submit" class="btn btn-outline-secondary ml-2">Add</button>
+                            </div>
+                        </form>
+                </div>
+                <div class="row col-12">
+                    <div class="col-6">
+                    {%for item in customed_field_value %}
+                      <label class="form-check-label ml-4">
+                        <input id = 'checkbox_field' onchange="delete_button_action()" type="checkbox" class="form-check-input" value="{{item}}">{{item}}
+                      </label>
+                      <br>
+                    {% endfor %}
+                    </div>
+                    <div id = 'delete_button' class="col-3" style="margin: auto 0;display: none" >
+                        <button class="btn btn-danger" onclick="delete_field_value()" >Delete</button>
+                    </div>
+                        <div class="col-12 text-center"><p>{{ message }}</p></div>
+                </div>
+            </td>
+    </table>
+</div>
+</div>
+{% endblock %}
