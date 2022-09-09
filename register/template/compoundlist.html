@@ -32,6 +32,38 @@ input[type="password"] {
     vertical-align: middle;
     font-size: 13px;
 }
+
+.table tr select{
+    border:none;
+    width: 3rem;
+}
+
+.table tr th input{
+    width: 3rem;
+    height: 1rem;
+    border-radius: 1px;
+    border: none;
+    font-size: 9px;
+    outline: none;
+    text-align: center;
+
+}
+
+.table tr td input{
+    width: 3rem;
+    height: 1rem;
+    border-radius: 1px;
+    border: none;
+    font-size: 9px;
+    outline: none;
+    text-align: center;
+
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button { -webkit-appearance: none !important;}
+
+
  img:hover{
      transform:scale(3,3);
      z-index:auto  ;
@@ -39,23 +71,25 @@ input[type="password"] {
 </style>
 
 <script type="text/javascript">
-function hidesmiles() {
-    $('tr').find('th:eq(2)').hide();
-    $('tr').find('td:eq(2)').hide();
-    $('#showsmiles').show();
-    $('#hidesmiles').hide();
-}
-function showsmiles() {
-    $('tr').find('th:eq(2)').show();
-    $('tr').find('td:eq(2)').show();
-    $('#hidesmiles').show();
-    $('#showsmiles').hide();
-}
-function alertsmiles(){
-    var tdSeq = $(this).parent().find("td").index($(this)[0]);
-    var trSeq = $(this).parent().parent().find("tr").index($(this).parent()[0]);
-
-}
+function getifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles(true).then((result) => {
+        //alert(result);
+		document.getElementById('query_smiles').value = result;
+		document.getElementById('save_smiles').value = result;
+		//if (result.length == 0)
+		//    alert('没有获取到化合物结构，请重新输入! ')
+      //  else
+		    //window.console.info(document.getElementById('search_smiles').value )
+		//    document.getElementById('submitsmiles').submit();
+      })
+		}
 
 window.onload = function(){
     var table1 = document.getElementById('table1')
@@ -69,7 +103,17 @@ window.onload = function(){
         }
     }
 }
+
+function submit_subsearch(){
+    document.getElementById('subsearch').submit();
+}
+
+function showsaved(){
+    $('#save_div').show();
+    $('#save_smiles').show();
+    }
 </script>
+
 {% endblock %}
 
 
@@ -132,7 +176,7 @@ window.onload = function(){
 <tr>
     <th class="col-2">Structure</th>
     <th>Cmp.ID</th>
-    <th id="smiles_title" style="display: none">Smiles</th>
+    <th style="display: none">Smiles</th>
     <th>Project</th>
     <th>Registrar</th>
     <th>Supplier</th>
@@ -151,6 +195,111 @@ window.onload = function(){
     <th>Comments</th>
     <th>&nbsp&nbsp&nbsp&nbsp&nbsp;</th>
 </tr>
+<form method="post" action="/compoundlist/" id = 'subsearch'>
+<tr style="background-color: #f8f9fa">
+    {% csrf_token %}
+    <th><a style="cursor: pointer" class="btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg"><i class="fa fa-pencil"></i></a>
+        <a id='save_div' style="display: none;color: #1B893A">saved!</a>
+        <input id='save_smiles' style="display: none" value="{{ query_smiles_s }}"></input>
+    </th>
+    <th><input name="compound_id" value="{{ compound_id_s }}"></th>
+    <th style="display:none"><input name="query_smiles" id="query_smiles"></th>
+    <th>
+        <select name="project">
+        <option disabled>Chosse:</option>
+        <option selected value="{{ project_s }}">{{ project_s }}</option>
+        {% for item in project %}
+         <option>{{ item }}</option>
+        {% endfor %}
+        </select>
+    </th>
+    <th><input name="registrar" value = {{ registrar_s }}></th>
+    <th><input name="from_supplier" value ="{{ supplier_s }}"></th>
+    <th>
+        <input name="weights" style= 'color: #cdcdcd' placeholder="min" value="-Infinity" onfocus="javascript:if(this.value==-Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=-Infinity">
+        -
+        <input name="weightl" style= 'color: #cdcdcd' placeholder="max" value=Infinity  onfocus="javascript:if(this.value==Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=Infinity">
+    </th>
+    <th>
+        <select name="weight_unit">
+        <option disabled>Chosse:</option>
+        <option selected value="{{ weight_unit_s }}">{{ weight_unit_s }}</option>
+        {% for item in weight_unit %}
+         <option>{{ item }}</option>
+        {% endfor %}
+        </select>
+    </th>
+    <th><input name="supplier_ref" value="{{ supplier_ref_s }}"></th>
+    <th><input name="registration_times" type='datetime'  value="2022-01-01 10:00">-<input name="registration_timel" type='datetime'  value="2032-01-01 10:00"></th>
+    <th>
+        <select name="salt">
+        <option disabled>Chosse:</option>
+        <option selected value="{{ salt_s }}">{{ salt_s }}</option>
+        {% for item in salt %}
+         <option>{{ item }}</option>
+        {% endfor %}
+        </select>
+    </th>
+    <th>
+        <select name="stoich">
+        <option disabled>Chosse:</option>
+        <option selected value="{{ stoich_s }}">{{ stoich_s }}</option>
+        {% for item in stoich %}
+         <option>{{ item }}</option>
+        {% endfor %}
+        </select>
+    </th>
+    <th>
+        <select name="appearance">
+            <option disabled>Chosse:</option>
+            <option selected value="{{ appearance_s }}">{{ appearance_s }}</option>
+            {% for item in appearance %}
+            <option>{{ item }}</option>
+            {% endfor %}
+        </select>
+    </th>
+    <th>
+        <select name="location">
+            <option disabled>Chosse:</option>
+            <option selected value="{{ location_s }}">{{ location_s }}</option>
+            {% for item in location %}
+             <option>{{ item }}</option>
+            {% endfor %}
+        </select>
+    </th>
+    <th>
+        <select name="chiral">
+        <option disabled>Chosse:</option>
+        <option selected value="{{ chiral_s }}">{{ chiral_s }}</option>
+        {% for item in chiral %}
+         <option>{{ item }}</option>
+        {% endfor %}
+        </select>
+    </th>
+
+    <th>
+        <input name="mws" style= 'color: #cdcdcd' placeholder="min" value=-Infinity onfocus="javascript:if(this.value==-Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=-Infinity">
+        -
+        <input name="mwl" style= 'color: #cdcdcd' placeholder="max" value=Infinity  onfocus="javascript:if(this.value==Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=Infinity">
+    </th>
+    <th>
+        <input name="tpsas" style= 'color: #cdcdcd' placeholder="min" value=-Infinity onfocus="javascript:if(this.value==-Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=-Infinity">
+        -
+        <input name="tpsal" style= 'color: #cdcdcd' placeholder="max" value=Infinity  onfocus="javascript:if(this.value==Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=Infinity">
+    </th>
+
+     <th>
+        <input name="logps" style= 'color: #cdcdcd' placeholder="min" value=-Infinity onfocus="javascript:if(this.value==-Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=-Infinity">
+        -
+        <input name="logpl" style= 'color: #cdcdcd' placeholder="max" value=Infinity  onfocus="javascript:if(this.value==Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=Infinity">
+    </th>
+    <th><input value="{{ comments_s }}" name="comments"></th>
+    <th>
+        <a style="cursor: pointer" onclick=window.location.href="/compoundlist/"><i class="fa fa-remove"></i></a>
+        <a style="cursor: pointer" onclick="submit_subsearch()"><i class="fa fa-search"></i></a>
+    <th>
+</tr>
+</form>
 </thead>
 <tbody>
      {%for item in sublist %}
@@ -158,13 +307,13 @@ window.onload = function(){
             <td class="col-2"><img src="{{item.compound.img_file}}" style="width: 80%;"></td>
 		    <td>{{item.compound_id}}</td>
             <td id="smiles_domain" style="display: none">{{item.smiles}}</td>
-            <td>{{item.project}}</td>
+            <td >{{item.project}}</td>
             <td>{{item.registrar}}</td>
             <td>{{item.from_supplier}}</td>
             <td>{{item.weight}}</td>
             <td>{{item.weight_unit}}</td>
             <td>{{item.supplier_ref}}</td>
-            <td>{{item.registration_time}}</td>
+            <td>{{item.registration_time | date:"Y-m-d H:i" }}</td>
             <td>{{item.salt}}</td>
             <td>{{item.stoich}}</td>
             <td>{{item.appearance}}</td>
@@ -175,7 +324,7 @@ window.onload = function(){
             <td>{{item.compound.xlogp}}</td>
             <td>{{item.comments}}</td>
             <td class="text-center" id="action_ico" style="display: none">
-                <a href="/edit_compound/?edit_compound_id={{item.compound_id}}" title="Edit" methods="GET">
+                <a href="/edit_compound/?edit_compound_id={{item.compound_id}}" id ='edit_button' title="Edit" methods="GET">
                    <i class="fa fa-edit"></i>
                 </a>
                 <a href="/delete_compound/?delete_compound_id={{item.compound_id}}" title="Delete" methods="GET">
@@ -211,5 +360,23 @@ window.onload = function(){
         {% endif %}
       </ul>
 </nav>
+</div>
+
+
+<!-- Modal -->
+
+
+<div class="col-lg-12 modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="text-align: center;background-color: transparent;border: none">
+        <div >
+            <iframe id="ifKetcher" src="/static/ketcher/index.html?hiddenControls=help,about" width="650" height="480"  style="border: none;border-radius:3px"></iframe>
+        </div>
+
+        <div style="text-align: center">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="getifKetcher();showsaved()">Save</button>
+        </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

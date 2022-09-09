@@ -39,7 +39,7 @@ def index(request):
 
 def registration(request):
     if request.method == 'POST':
-        username = request.session['username']
+        username = request.session.get('username')
         user_info = UsersInfo.objects.get(username=username)
         if request.POST.get('getsmiles') != '':
             #分子属性及ID
@@ -119,7 +119,7 @@ def reg_result(request):
         supplier_ref = request.POST.get('supplier_ref')
         registration_time = request.POST.get('registration_time')
         salt = request.POST.get('salt')
-        stoich = float(request.POST.get('stoich'))
+        stoich = request.POST.get('stoich')
         comments = request.POST.get('comments')
         appearance = request.POST.get('appearance')
         location = request.POST.get('location')
@@ -144,7 +144,7 @@ def reg_result(request):
             molecule_insert_1 = mol_props.objects.create(compound_id=compound_id, smiles=smiles, mol_file=mol, TPSA=tpsa, xlogp=logp, MW=mw, img_file=img_path, fingerprint=fp, mol_file_path=mol_file_path)
             molecule_insert_1.save()
             molecule_insert_2 = cutome_fields_data.objects.create(compound_id=compound_id,project=project,registrar=registrar,from_supplier=from_supplier,appearance=appearance,location=location,chiral=chiral,
-                                                                 weight=weight,weight_unit=weight_unit,supplier_ref=supplier_ref,registration_time=registration_time,salt=salt,stoich=float(stoich),comments=comments)
+                                                                 weight=weight,weight_unit=weight_unit,supplier_ref=supplier_ref,registration_time=registration_time,salt=salt,stoich=stoich,comments=comments)
             molecule_insert_2.save()
             html = '<center><p>化合物注册成功！</p></br><a href = \'/compoundlist/\'>Compound List</a></center>'
             return HttpResponse(html)
@@ -205,7 +205,7 @@ def edit_compound(request):
                     html = '<center><p>结构有误，请重新输入！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
                     return HttpResponse(html)
                 else:
-                    if update_edit_smiles == update_item.smiles:
+                    if Chem.CanonSmiles(update_edit_smiles) == Chem.CanonSmiles(update_item.smiles):
                         html = '<center><p>结构未做任何修改！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
                         return HttpResponse(html)
                     else:
@@ -248,25 +248,126 @@ def edit_compound(request):
                             update_item.fingerprint = fp
                             update_item.mol_file_path = mol_file_path
                             update_item.save()
-                            return redirect("/compoundlist/")
+                            return HttpResponse('更新成功！')
     else:
         return redirect("/login/")
 
 
 def compoundlist(request):
     if request.session.get('is_login'):
+        username = request.session.get('username')
+        user_info = UsersInfo.objects.get(username=username)
+        if request.method == 'POST':
+            query_smiles_s = request.POST.get('query_smiles')
+            compound_id_s = request.POST.get('compound_id')
+            project_s = request.POST.get('project')
+            registrar_s = request.POST.get('registrar')
+            supplier_s = request.POST.get('from_supplier')
+            weights_s = request.POST.get('weights')
+            weightl_s = request.POST.get('weightl')
+            weight_unit_s = request.POST.get('weight_unit')
+            supplier_ref_s = request.POST.get('supplier_ref')
+            registration_times = request.POST.get('registration_times')
+            registration_timel = request.POST.get('registration_timel')
+            salt_s = request.POST.get('salt')
+            appearance_s = request.POST.get('appearance')
+            stoich_s = request.POST.get('stoich')
+            location_s = request.POST.get('location')
+            chiral_s = request.POST.get('chiral')
+            comments_s = request.POST.get('comments')
+            mws_s = request.POST.get('mws')
+            mwl_s = request.POST.get('mwl')
+            tpsas_s = request.POST.get('tpsas')
+            tpsal_s = request.POST.get('tpsal')
+            logps_s = request.POST.get('logps')
+            logpl_s = request.POST.get('logpl')
+
+            # substructure search
+            query_smiles = request.POST.get('query_smiles')
+            mol_list = []
+            if query_smiles != '':
+                mols= mol_props.objects.all()
+                for mol in mols:
+                    m = Chem.MolFromSmiles(mol.smiles)
+                    if m.HasSubstructMatch(Chem.MolFromSmiles(query_smiles)):
+                        mol_list.append(mol.smiles)
+            if query_smiles == '':
+                mols = mol_props.objects.all()
+                for mol in mols:
+                    mol_list.append(mol.smiles)
+            # substructure search
+
+            # build query set
+            query_set_ori = cutome_fields_data.objects \
+            .filter(compound__compound_id__icontains=compound_id_s) \
+            .filter(compound__smiles__in=mol_list)\
+            .filter(project__icontains=project_s) \
+            .filter(registrar__icontains=registrar_s) \
+            .filter(from_supplier__icontains=supplier_s) \
+            .filter(weight__gte=weights_s).filter(weight__lte=weightl_s) \
+            .filter(weight_unit__icontains=weight_unit_s)\
+            .filter(supplier_ref__icontains=supplier_ref_s) \
+            .filter(registration_time__gte=registration_times).filter(registration_time__lte=registration_timel)\
+            .filter(salt__icontains=salt_s)\
+            .filter(appearance__icontains=appearance_s) \
+            .filter(stoich__icontains=stoich_s) \
+            .filter(location__icontains=location_s) \
+            .filter(chiral__icontains=chiral_s) \
+            .filter(comments__icontains=comments_s) \
+            .filter(compound__MW__gte=mws_s).filter(compound__MW__lte=mwl_s) \
+            .filter(compound__TPSA__gte=tpsas_s).filter(compound__TPSA__lte=tpsal_s) \
+            .filter(compound__xlogp__gte=logps_s).filter(compound__xlogp__lte=logpl_s) \
+
+            query_set = query_set_ori.order_by('-compound_id')
+            # build query set
+
+            #render drop down lsit
+            customed_value_list = cutome_fields_dictionary.objects.all()
+            project = cutome_fields_dictionary.objects.filter(field_name='project').values_list('field_value',flat=True)
+            from_supplier = cutome_fields_dictionary.objects.filter(field_name='from_supplier').values_list('field_value', flat=True)
+            salt = cutome_fields_dictionary.objects.filter(field_name='salt').values_list('field_value', flat=True)
+            stoich = cutome_fields_dictionary.objects.filter(field_name='stoich').values_list('field_value', flat=True)
+            appearance = cutome_fields_dictionary.objects.filter(field_name='appearance').values_list('field_value',flat=True)
+            location = cutome_fields_dictionary.objects.filter(field_name='location').values_list('field_value',flat=True)
+            weight_unit = cutome_fields_dictionary.objects.filter(field_name='weight_unit').values_list('field_value',flat=True)
+            chiral = cutome_fields_dictionary.objects.filter(field_name='chiral').values_list('field_value', flat=True)
+            # build query set
+
+            # render drop down lsit
+            # page paginator
+            paginator = Paginator(query_set, 10)
+            page = request.GET.get('page', 1)
+            try:
+                sublist = paginator.page(page)
+            except PageNotAnInteger:
+                sublist = paginator.page(1)
+            except EmptyPage:
+                sublist = paginator.page(paginator.num_pages)
+            return render(request, "compoundlist.html", locals())
+            # page paginator
+
+        # when first enter compoundlist, transfer data
+        customed_value_list = cutome_fields_dictionary.objects.all()
+        project = cutome_fields_dictionary.objects.filter(field_name='project').values_list('field_value', flat=True)
+        from_supplier = cutome_fields_dictionary.objects.filter(field_name='from_supplier').values_list('field_value',flat=True)
+        salt = cutome_fields_dictionary.objects.filter(field_name='salt').values_list('field_value', flat=True)
+        stoich = cutome_fields_dictionary.objects.filter(field_name='stoich').values_list('field_value', flat=True)
+        appearance = cutome_fields_dictionary.objects.filter(field_name='appearance').values_list('field_value',flat=True)
+        location = cutome_fields_dictionary.objects.filter(field_name='location').values_list('field_value', flat=True)
+        weight_unit = cutome_fields_dictionary.objects.filter(field_name='weight_unit').values_list('field_value',flat=True)
+        chiral = cutome_fields_dictionary.objects.filter(field_name='chiral').values_list('field_value', flat=True)
+
         custome_field_list = cutome_fields_data.objects.all().order_by('-compound_id')
         paginator = Paginator(custome_field_list, 10)
         page = request.GET.get('page', 1)
-        username = request.session['username']
         try:
             sublist = paginator.page(page)
         except PageNotAnInteger:
             sublist = paginator.page(1)
         except EmptyPage:
             sublist = paginator.page(paginator.num_pages)
-        user_info = UsersInfo.objects.get(username=username)
         return render(request, "compoundlist.html", locals())
+        # when first enter compoundlist
     else:
         return redirect("/login/")
 
@@ -507,7 +608,7 @@ def custome_fields(request):
                     if not ['id', 'compound_id','compound', 'batch_id', 'registrar', 'supplier_ref', 'registration_time',
                             'comments', 'weight'].__contains__(field_need_custome):
                         fieldlist.append(field_need_custome)
-                return render(request, locals())
+                return render(request, 'custome_fields.html', locals())
 
         if request.method == 'POST':
             if request.POST.get('custome_field') and request.POST.get('custome_value'):

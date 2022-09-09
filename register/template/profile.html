@@ -74,7 +74,7 @@
 <div class="col-12 row">
     <div class="card col-3 mt-3" style="width: 12rem;">
       <img class="card-img-top" src="{{ user_info.avatar_file_path }}" alt="Card image cap" style="border-radius: 50%;border:1px solid #cccccc">
-        <div class="input-group">
+        <div class="input-group mt-2">
           <div class="custom-file">
             <form  id='avatar_upload' accept-charset="UTF-8" enctype="multipart/form-data" action = '/profile/avatar' method = 'post'>
                     {% csrf_token %}

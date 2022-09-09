@@ -16,7 +16,7 @@ function getifKetcher(ifKetcher){
 		if (result.length == 0)
 		    alert('没有获取到化合物结构，请重新输入! ')
         else
-		    window.console.info(document.getElementById('getsmiles').value )
+		    //window.console.info(document.getElementById('getsmiles').value )
 		    document.getElementById('submitsmiles').submit();
       })
 		}
@@ -133,8 +133,8 @@ function hideupload() {
                     <div class="input-group-prepend">
                         <button class="btn btn-light" disabled>Registrar</button>
     {#                    <label for="select1" class="input-group-text">Project</label>#}
-                         <select class="selectpicker" data-width="auto" disabled>
-                            <option value="" disabled selected>{{ username }}</option>
+                         <select name="registrar" class="selectpicker" data-width="auto">
+                            <option value="{{ username }}" selected>{{ username }}</option>
                          </select>
                     </div>
 
@@ -164,7 +164,7 @@ function hideupload() {
                     <div class="input-group-prepend pl-1">
                         <button class="btn btn-light" disabled>Weight</button>
                     </div>
-                    <input name='weight' value=0 type="text" class="form-control" style="border: 1px solid #f8f9fa">
+                    <input name='weight' value=0 type="number" class="form-control" style="border: 1px solid #f8f9fa">
                     <select name="weight_unit" class="selectpicker show-tick" data-live-search ="true" data-width="fit">
                            {%for item in weight_unit %}
                             <option value="{{ item }}">{{ item }}</option>
@@ -209,9 +209,8 @@ function hideupload() {
 
                     <div class="input-group-prepend ml-1">
                         <button class="btn btn-light" disabled>Stoich</button>
-
                     <select name='stoich' class="selectpicker show-tick" data-live-search ="true" data-width="5em">
-{#                        <option value="0.0" disabled selected>Choose:</option>#}
+                        <option value="0.0" disabled selected>Choose:</option>
                         {%for item in stoich %}
                             <option value="{{ item }}">{{ item }}</option>
                         {% endfor %}
