@@ -27,15 +27,17 @@ Main page
 
 Compound registration
 
-![image](https://user-images.githubusercontent.com/110211839/188128927-4d9ca79f-e351-4876-a8f9-5c2f97de5de3.png)
+![image](https://user-images.githubusercontent.com/110211839/189465932-5deb1457-8f37-4e2b-82a4-aa79a5a8ddd6.png)
 
 Substructure search and similarity/descriptor search
+![image](https://user-images.githubusercontent.com/110211839/189465936-1ae95fc7-a373-4a09-bfe1-b8c05d326c7e.png)
+![image](https://user-images.githubusercontent.com/110211839/189465877-363430be-4bb8-48b6-88e7-e3f3d0107274.png)
 
-![image](https://user-images.githubusercontent.com/110211839/188129026-968aa7b6-0f5c-4600-88dd-0a3a1557a11e.png)
+Custom Data Field
+![image](https://user-images.githubusercontent.com/110211839/189465893-43bdc798-2f90-49a3-a124-d70dbcc9b2be.png)
 
-Compound List
-
-![image](https://user-images.githubusercontent.com/110211839/188129086-18afc565-7b29-4783-afa7-991bf4a5822b.png)
+User Admin
+![image](https://user-images.githubusercontent.com/110211839/189465908-718456c5-a4dc-4821-8d53-68cb5e19145d.png)
 
 Delete Compound
 
