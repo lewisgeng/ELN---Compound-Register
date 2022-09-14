@@ -48,16 +48,33 @@ function hideupload() {
 }
 
 </script>
+<style type="text/css">
+.breadcrumb > li + li:before {
+    color: #cccccc;
+    content: ">";
+    padding: 0 5px;
+    background-color: #fff;
+}
+.breada {
+    color:#0b2e13;
+    text-decoration: none;
+;
+}
+
+.breadcrumb {
+    background-color: #fff;
+}
+</style>
 {% endblock %}
 
 
 {% block mainbody %}
-<div class="container">
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"><i>Register</i></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href=""><i>Register</i></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -65,10 +82,13 @@ function hideupload() {
         <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/compoundlist">Compound List</a>
+        <a class="nav-link" href="/compoundlist">Compounds</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/search">Search</a>
+        <a class="nav-link" href="/reagentlist">Reagents</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Salts</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -82,10 +102,6 @@ function hideupload() {
         </div>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
 
@@ -101,13 +117,18 @@ function hideupload() {
         </div>
       </li>
 </ul>
-  </div>
+</div>
+</nav>
+<nav aria-label="breadcrumb" class="offset-1 mt-3">
+  <ol class="breadcrumb">
+    <li><a style="text-decoration: none" class='breada' href="/index/">Home</a></li>
+    <li><a style="text-decoration: none" class='breada' href="">Register</a></li>
+  </ol>
 </nav>
 
-
 <div class="row mt-3">
-    <div class="col-lg-6">
-            <iframe id="ifKetcher" src="/static/ketcher/index.html?hiddenControls=help,about" width="650" height="480"
+    <div class="col-lg-5 offset-1">
+            <iframe id="ifKetcher" src="/static/ketcher/index.html?hiddenControls=help,about" width="720" height="560"
             style="border: none;-ms-zoom: 0.85;
                 -moz-transform: scale(0.85);
                 -moz-transform-origin: 0 0;
@@ -118,7 +139,7 @@ function hideupload() {
 
             </iframe>
     </div>
-    <div class="col-lg-6 col-lg-offset-6">
+    <div class="col-lg-5 col-lg-offset-6">
             <!-- 自定义表单组合-自定义选择（下拉框） -->
         <form class="search-form"  id ='submitsmiles' action = '/registration/' method = 'post'>
                     {% csrf_token %}
@@ -133,7 +154,7 @@ function hideupload() {
                     <div class="input-group-prepend">
                         <button class="btn btn-light" disabled>Registrar</button>
     {#                    <label for="select1" class="input-group-text">Project</label>#}
-                         <select name="registrar" class="selectpicker" data-width="auto">
+                         <select name="registrar" class="selectpicker" data-width="10em">
                             <option value="{{ username }}" selected>{{ username }}</option>
                          </select>
                     </div>
@@ -187,7 +208,7 @@ function hideupload() {
 
                     <div class="input-group-prepend ml-1">
                         <button class="btn btn-light" disabled>Location</button>
-                    <select name='location' class="selectpicker show-tick" data-live-search ="true" data-width="8em">
+                    <select name='location' class="selectpicker show-tick" data-live-search ="true" data-width="10em">
                         <option value="" disabled selected>Choose:</option>
                         {%for item in location %}
                             <option value="{{ item }}">{{ item }}</option>
@@ -209,7 +230,7 @@ function hideupload() {
 
                     <div class="input-group-prepend ml-1">
                         <button class="btn btn-light" disabled>Stoich</button>
-                    <select name='stoich' class="selectpicker show-tick" data-live-search ="true" data-width="5em">
+                    <select name='stoich' class="selectpicker show-tick" data-live-search ="true" data-width="6em">
                         <option value="0.0" disabled selected>Choose:</option>
                         {%for item in stoich %}
                             <option value="{{ item }}">{{ item }}</option>
@@ -219,7 +240,7 @@ function hideupload() {
 
                     <div class="input-group-prepend ml-1">
                         <button class="btn btn-light" disabled>Chiral</button>
-                        <select name='chiral' class="selectpicker show-tick" data-live-search ="true" data-width="5.5em">
+                        <select name='chiral' class="selectpicker show-tick" data-live-search ="true" data-width="6em">
                             <option value="" disabled selected>Choose:</option>
                             {%for item in chiral %}
                                 <option value="{{ item }}">{{ item }}</option>
@@ -243,7 +264,9 @@ function hideupload() {
                 <div class="form-group input-group">
                     <textarea name='comments' class="form-control" rows="2" placeholder="Comments" style="border: 2px solid #f8f9fa"></textarea>
                 </div>
-                <button onclick="getifKetcher('ifKetcher');" type="button" class="btn btn-success btn-lg btn-block">Pre-register</button>
+                <div class="text-right">
+                    <button onclick="getifKetcher('ifKetcher');" type="button" class="btn">Pre-register</button>
+                </div>
         </form>
 
         <div class="text-right">
@@ -263,5 +286,5 @@ function hideupload() {
         </div>
         </div>
     </div>
-</div>
+
 {% endblock %}

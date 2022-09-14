@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript">
+function getifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles(true).then((result) => {
+        //alert(result);
+		document.getElementById('reagentsmiles').value = result;
+		if (result.length == 0)
+		    alert('没有获取到化合物结构，请重新输入! ')
+        else
+		    //window.console.info(document.getElementById('reagentsmiles').value )
+		    document.getElementById('submit_reagentsmiles').submit();
+      })
+		}
+
+
+function get_reagent_ifKetcher(ifKetcher){
+	var ketcherFrame = document.getElementById('ifKetcher_reagent');
+	var ketcher = null;
+	if ('contentDocument' in ketcherFrame)
+		ketcher = ketcherFrame.contentWindow.ketcher;
+	else // IE7
+		ketcher = document.frames['ifKetcher_reagent'].window.ketcher;
+	//window.console.info(ketcher.getSmiles());
+	ketcher.getSmiles(true).then((result) => {
+        //alert(result);
+		document.getElementById('query_reagent_smiles').value = result;
+		//if (result.length == 0)
+		   // alert('没有获取到化合物结构，请重新输入! ')
+        //else
+		    //window.console.info(document.getElementById('reagentsmiles').value )
+		   // document.getElementById('submit_reagentsmiles').submit();
+      })
+		}
+
+function goto_searchreagent(){
+    var sub_reagent_smiles = document.getElementById('query_reagent_smiles').value;
+    var sub_reagent_id = document.getElementById('reagent_id').value;
+    var sub_reagent_iupac_name = document.getElementById('reagent_iupac_name').value;
+    var sub_reagent_cas_no = document.getElementById('reagent_cas_no').value;
+    window.console.info(sub_reagent_id)
+    var url=''
+    url = "/reagentlist/?sub_reagent_smiles="+ sub_reagent_smiles+'&sub_reagent_id='+sub_reagent_id+'&sub_reagent_iupac_name='+sub_reagent_iupac_name+'&sub_reagent_cas_no='+sub_reagent_cas_no
+    window.location.href = url
+}
+function showsaved(){
+    $('#save_div').show();
+    $('#query_reagent_smiles').show();
+    }
+
+</script>
+<style type="text/css">
+    .table tr th {
+
+    font-size: 10px;
+    outline: none;
+    text-align: center;
+
+}
+    .table tr td {
+
+    font-size: 9px;
+    outline: none;
+    text-align: center;
+
+}
+.table tr th input{
+    width: 6rem;
+    height: 1rem;
+    border-radius: 1px;
+    border: none;
+    font-size: 9px;
+    outline: none;
+    text-align: center;
+
+}
+.breadcrumb > li + li:before {
+    color: #cccccc;
+    content: ">";
+    padding: 0 5px;
+    background-color: #fff;
+}
+.breada {
+    color:#0b2e13;
+    text-decoration: none;
+;
+}
+
+.breadcrumb {
+    background-color: #fff;
+}
+</style>
+{% endblock %}
+
+
+{% block mainbody %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/index/"><i>Register</i></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Compounds</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/reagentlist">Reagents</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Salts</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Setting
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/custome_fields/">Configuration</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
+            Welcome, {{ username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="dropdown-item" href="/profile/">User Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<nav aria-label="breadcrumb" class="offset-1 mt-3">
+  <ol class="breadcrumb">
+    <li><a style="text-decoration: none" class='breada' href="/index/">Home</a></li>
+    <li><a style="text-decoration: none" class='breada' href="">Reagents</a></li>
+  </ol>
+</nav>
+
+<div class="row mt-3">
+    <div class="col-lg-5 offset-1" style="border-right: 1px dashed #cccccc">
+            <iframe id="ifKetcher" src="/static/ketcher/index.html?moll={{ reagent_smiles }}&hiddenControls=help,about" width="720" height="560"
+            style="border: none;-ms-zoom: 0.85;
+                -moz-transform: scale(0.85);
+                -moz-transform-origin: 0 0;
+                -o-transform: scale(0.85);
+                -o-transform-origin: 0 0;
+                -webkit-transform: scale(0.85);
+                -webkit-transform-origin: 0 0; ">
+            </iframe>
+            <div class="col-lg-12" style="text-align: right;margin-top: -4em">
+                <form class="search-form" id ='submit_reagentsmiles' action = '/reagentlist/' method = 'POST'>
+                    {% csrf_token %}
+                    <input type="text" name='reagentsmiles' id ='reagentsmiles' style="display: none">
+                    <p>{{ message }}</p>
+                    <button onclick="getifKetcher('ifKetcher');" type="button" class="btn">Add Reagent</button>
+                </form>
+            </div>
+    </div>
+    <div class="col-lg-5" style="overflow-y:scroll;overflow-x:hidden;height:550px">
+      <table class="table table-hover table-sm col-8 text-center" >
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Reagent</th>
+              <th scope="col">Reagent ID</th>
+              <th scope="col">IUPAC Name</th>
+              <th scope="col">CAS No.</th>
+              <th scope="col"></th>
+            </tr>
+            <tr style="background-color: #f8f9fa">
+                {% csrf_token %}
+                 <th></th>
+                <th><a style="cursor: pointer" class="btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg"><i class="fa fa-pencil"></i></a>
+                    <a id='save_div' style="display: none;color: #1B893A">saved!</a>
+                    <input type="text" id='query_reagent_smiles' value="{{ sub_reagent_smiles_s }}" style="display: none"></input>
+                </th>
+                <th><input type="text" id="reagent_id" value="{{ sub_reagent_id_s }}"></th>
+                <th><input type="text" id="reagent_iupac_name" value="{{ sub_reagent_iupac_name_s }}"></th>
+                <th><input type="text" id="reagent_cas_no" value="{{ sub_reagent_cas_no_s }}"></th>
+                <th>
+                    <a style="cursor: pointer" onclick=window.location.href="/reagentlist/"><i class="fa fa-remove"></i></a>
+                    <a style="cursor: pointer" onclick="goto_searchreagent()"><i class="fa fa-search"></i></a>
+                <th>
+            </tr>
+
+          </thead>
+          <tbody>
+          {% for reagent in reagent_list %}
+            <tr>
+              <th  style="vertical-align: middle" scope="row">{{ reagent.id }}</th>
+              <td style="vertical-align: middle"><img src="{{ reagent.reagent_img_path }}"  style="wdith:3rem;height:3rem;"></td>
+              <td style="vertical-align: middle">{{ reagent.reagentid }}</td>
+              <td style="vertical-align: middle">{{ reagent.name }}</td>
+              <td style="vertical-align: middle">{{ reagent.cas_no }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+
+</div>
+
+<!-- Modal -->
+
+
+<div class="col-lg-12 modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="text-align: center;background-color: transparent;border: none">
+        <div>
+            <iframe id="ifKetcher_reagent" src="/static/ketcher/index.html?hiddenControls=help,about" width="650" height="480"  style="border: none;border-radius:3px"></iframe>
+        </div>
+
+        <div style="text-align: center">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="get_reagent_ifKetcher();showsaved()">Save</button>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

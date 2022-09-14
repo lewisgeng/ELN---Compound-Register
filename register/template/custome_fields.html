@@ -53,27 +53,46 @@
             $('#delete_button').hide()
     }
 </script>
+<style type="text/css">
+.breadcrumb > li + li:before {
+    color: #cccccc;
+    content: ">";
+    padding: 0 5px;
+    background-color: #fff;
+}
+.breada {
+    color:#0b2e13;
+    text-decoration: none;
+;
+}
+
+.breadcrumb {
+    background-color: #fff;
+}
+</style>
 {% endblock %}
 
 {% block mainbody %}
-<div class="container">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"><i>Register</i></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/index/"><i>Register</i></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/index/">Home </a>
+        <a class="nav-link" href="/index/">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/compoundlist">Compound List<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/compoundlist">Compounds</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/search">Search</a>
+        <a class="nav-link" href="/reagentlist">Reagents</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Salts</a>
       </li>
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -87,15 +106,12 @@
         </div>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
+
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
-            {{ username }}
+            Welcome, {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/logout">Logout</a>
@@ -104,17 +120,24 @@
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
-</ul>
+    </ul>
   </div>
 </nav>
-
-<div class="col-12 row table">
+<nav aria-label="breadcrumb" class="offset-1 mt-3">
+  <ol class="breadcrumb">
+    <li><a style="text-decoration: none" class='breada' href="/index/">Home</a></li>
+    <li><a style="text-decoration: none" class='breada' href="/custome_fields/">Setting</a></li>
+    <li><a style="text-decoration: none" class='breada' href="/custome_fields/">Configuration</a></li>
+    <li><a style="text-decoration: none" class='breada' href="/custome_fields/">Data Field</a></li>
+  </ol>
+</nav>
+<div class="col-10 offset-1 row table">
     <div class="col-2 list-group text-center">
       <a href="" class="list-group-item list-group-item-action" style="background-color: #f8f9fa ">Data Field</a>
       <a href="/user_admin/" class="list-group-item list-group-item-action">User Admin</a>
     </div>
 
-    <table class="col-10" id="custome_field_table">
+    <table class="col-8" id="custome_field_table">
         <tr id = 'dxbox'>
             <td class="col-12">
                 <div class="form-group input-group col-12">

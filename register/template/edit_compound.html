@@ -21,31 +21,51 @@
       })
 		}
 </script>
+
+
+<style type="text/css">
+.breadcrumb > li + li:before {
+    color: #cccccc;
+    content: ">";
+    padding: 0 5px;
+    background-color: #fff;
+}
+.breada {
+    color:#0b2e13;
+    text-decoration: none;
+;
+}
+
+.breadcrumb {
+    background-color: #fff;
+}
+</style>
 {% endblock %}
 
 
 
 {% block mainbody %}
-<div class="container">
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"><i>Register</i></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/index/"><i>Register</i></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/index/">Home </a>
+        <a class="nav-link" href="/index/">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="/compoundlist">Compound List<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/compoundlist">Compounds</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/search">Search</a>
+        <a class="nav-link" href="/reagentlist">Reagents</a>
       </li>
-      <li class="nav-item dropdown">
+      <li class="nav-item">
+        <a class="nav-link" href="/compoundlist">Salts</a>
+      </li>
+      <li class="nav-item  dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Setting
         </a>
@@ -57,15 +77,12 @@
         </div>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
+
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
-            {{ username }}
+            Welcome, {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/logout">Logout</a>
@@ -74,12 +91,22 @@
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
-</ul>
+    </ul>
   </div>
 </nav>
-<div class="row mt-3">
-    <div class="col-lg-6 col-lg-offset-3"  >
-        <iframe id="ifKetcher" src="/static/ketcher/index.html?moll={{ origin_smiles }}&hiddenControls=help,about" width="650" height="480"
+
+<nav aria-label="breadcrumb" class="offset-1 mt-3">
+  <ol class="breadcrumb">
+    <li><a style="text-decoration: none" class='breada' href="/index/">Home</a></li>
+    <li><a style="text-decoration: none" class='breada' href="/compoundlist/">Compounds</a></li>
+    <li><a style="text-decoration: none" class='breada' href="">Edit Compound</a></li>
+    <li>{{ edit_compound_id }}</li>
+  </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-5 offset-1"  >
+        <iframe id="ifKetcher" src="/static/ketcher/index.html?moll={{ compound_data.compound.smiles }}&hiddenControls=help,about" width="720" height="560"
                  style="border: none;-ms-zoom: 0.85;
                 -moz-transform: scale(0.85);
                 -moz-transform-origin: 0 0;
@@ -88,15 +115,158 @@
                 -webkit-transform: scale(0.85);
                 -webkit-transform-origin: 0 0; ">
         </iframe>
-        <div class="form-group input-group" style="float: none;display: inline-block;vertical-align: middle">
-                <form class="search-form" id ='submit_update_smiles' action = '/edit_compound/' method = 'post' >
+
+    </div>
+    <div class="col-lg-5 col-lg-offset-6">
+        <!-- 自定义表单组合-自定义选择（下拉框） -->
+        <form class="search-form"  id ='submit_update_smiles' action = '/edit_compound/?edit_compound_id={{ edit_compound_id }}' method = 'post'>
                     {% csrf_token %}
+                <div class="form-group input-group">
+                    <input type="text" name='getsmiles' id ='getsmiles' style="display: none">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Registrar</button>
+                         <select name="registrar" class="selectpicker" data-width="auto">
+                            <option value="{{ compound_data.registrar }}" selected>{{ compound_data.registrar }}</option>
+                         </select>
+                    </div>
+                    <div class="input-group-prepend pl-2">
+                        <button class="btn btn-light" disabled>Project</button>
+                        <select name='project' class="selectpicker show-tick" data-live-search ="true" data-width="15.5em">
+                        {%for item in project %}
+                            {% if item == compound_data.project %}
+                                <option value="{{ compound_data.project }}" selected>{{ compound_data.project }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Supplier</button>
+                        <select name='from_supplier' class="selectpicker show-tick" data-live-search ="true" data-width="auto">
+                        {%for item in from_supplier %}
+                            {% if item == compound_data.from_supplier %}
+                                <option value="{{ compound_data.from_supplier }}" selected>{{ compound_data.from_supplier }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-group-prepend pl-1">
+                        <button class="btn btn-light" disabled>Weight</button>
+                    </div>
+                    <input name='weight' value={{ compound_data.weight }} type="number" class="form-control" style="border: 1px solid #f8f9fa">
+                    <select name="weight_unit" class="selectpicker show-tick" data-live-search ="true" data-width="fit">
+                           {%for item in weight_unit %}
+                               {% if item == compound_data.weight_unit %}
+                                    <option value="{{ compound_data.weight_unit }}" selected>{{ compound_data.weight_unit }}</option>
+                               {% else %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                               {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Supplier Reference</button>
+                    </div>
+                    <input name='supplier_ref' type="text" class="form-control" value='{{ compound_data.supplier_ref }}' style="border: 2px solid #f8f9fa">
+                </div>
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Registration Time</button>
+                    </div>
+                    <select name='registration_time' class="selectpicker" data-width="8.5em">
+                        <option value="{{ compound_data.registration_time }}" selected>{{ compound_data.registration_time }}</option>
+                    </select>
+
+                    <div class="input-group-prepend ml-1">
+                        <button class="btn btn-light" disabled>Location</button>
+                    <select name='location' class="selectpicker show-tick" data-live-search ="true" data-width="8.5em">
+                        {%for item in location %}
+                            {% if item == compound_data.location %}
+                                <option value="{{ compound_data.location }}" selected>{{ compound_data.location }}</option>
+                            {% else %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    </div>
+                </div>
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Appearance</button>
+                    <select name='appearance' class="selectpicker show-tick" data-live-search ="true" data-width="7.5em">
+                        {%for item in appearance %}
+                            {% if item == compound_data.appearance %}
+                                <option value="{{ compound_data.appearance }}" selected>{{ compound_data.appearance }}</option>
+                            {% else %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    </div>
+
+                    <div class="input-group-prepend ml-1">
+                        <button class="btn btn-light" disabled>Stoich</button>
+                    <select name='stoich' class="selectpicker show-tick" data-live-search ="true" data-width="5em">
+                        {%for item in stoich %}
+                            {% if item == compound_data.stoich %}
+                                <option value="{{ compound_data.stoich }}" selected>{{ compound_data.stoich }}</option>
+                            {% else %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    </div>
+
+                    <div class="input-group-prepend ml-1">
+                        <button class="btn btn-light" disabled>Chiral</button>
+                        <select name='chiral' class="selectpicker show-tick" data-live-search ="true" data-width="5.5em">
+                            {%for item in chiral %}
+                                {% if item == compound_data.chiral %}
+                                    <option value="{{ compound_data.chiral }}" selected>{{ compound_data.chiral }}</option>
+                                {% else %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light" disabled>Salt</button>
+                    </div>
+                    <select name='salt' class="selectpicker show-tick" data-live-search ="true" data-width="fit">
+                        {%for item in salt %}
+                            {% if item == compound_data.salt %}
+                                <option value="{{ compound_data.salt }}" selected>{{ compound_data.salt }}</option>
+                            {% else %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+                </div>
+                <div class="form-group input-group">
+                    <textarea name='comments' class="form-control" rows="2" placeholder="Comments" style="border: 2px solid #f8f9fa">{{ compound_data.comments }}</textarea>
+                </div>
+                <div class="form-group input-group">
                     <input type="text" name='edit_compound_id' id ='edit_compound_id' style="display: none" value="{{ edit_compound_id }}">
                     <input type="text" name='update_edit_smiles' id ='update_edit_smiles' style="display: none">
-                    <button onclick="getifKetcher('ifKetcher');" type="button" class="btn btn-success btn-lg btn-block">Update molecule</button>
-                </form>
-        </div>
+                </div>
+                <div class="text-right">
+                    <button onclick="getifKetcher('ifKetcher');" type="button" class="btn">Update</button>
+                </div>
+        </form>
+
     </div>
     </div>
 </div>
+
 {% endblock %}

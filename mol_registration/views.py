@@ -7,11 +7,12 @@ from rdkit import Chem, DataStructs
 import rdkit
 from rdkit.Chem import AllChem, Descriptors
 from rdkit.Chem.Draw import rdMolDraw2D
-from .models import mol_props, cutome_fields_data, cutome_fields_dictionary
+from .models import mol_props, cutome_fields_data, cutome_fields_dictionary,reagents
 import datetime
 from . import models
 from user.models import UsersInfo
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+import pubchempy as pcp, requests, random
 
 
 def index(request):
@@ -43,14 +44,12 @@ def registration(request):
         user_info = UsersInfo.objects.get(username=username)
         if request.POST.get('getsmiles') != '':
             #分子属性及ID
-            smiles_original = request.POST.get('getsmiles')
-            mol_check = Chem.MolFromSmiles(smiles_original)
+            smiles = request.POST.get('getsmiles')
+            mol_check = Chem.MolFromSmiles(smiles)
             if mol_check is None:
                 html = '<center><p>化合物结构错误，请重新输入！</p></br><a href = \'/index/\'>返回首页</a></center>'
                 return HttpResponse(html)
             else:
-                # convert to canonsmiles
-                smiles = rdkit.Chem.CanonSmiles(smiles_original)
                 mol = Chem.MolFromSmiles(smiles)
                 tpsa = round(Descriptors.TPSA(mol), 3)
                 logp = round(Descriptors.MolLogP(mol), 3)
@@ -106,7 +105,7 @@ def registration(request):
 
 def reg_result(request):
     if request.method == 'POST':
-        smiles_original = request.POST.get('smiles')
+        smiles = request.POST.get('smiles')
         logp = request.POST.get('logp')
         mw = request.POST.get('mw')
         compound_id = request.POST.get('compound_id')
@@ -126,8 +125,6 @@ def reg_result(request):
         chiral = request.POST.get('chiral')
         weight = request.POST.get('weight')
         weight_unit = request.POST.get('weight_unit')
-        #convert to canonsmiles
-        smiles = rdkit.Chem.CanonSmiles(smiles_original)
         mol_mem = Chem.MolFromSmiles(smiles)
         mol = Chem.MolToMolBlock(mol_mem)
         mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % compound_id, 'w')
@@ -187,68 +184,130 @@ def edit_compound(request):
         user_info = UsersInfo.objects.get(username=username)
         if request.method == 'GET':
             edit_compound_id = request.GET.get('edit_compound_id')
-            edit_compound_item = mol_props.objects.get(compound_id=edit_compound_id)
-            ctx = {}
-            origin_smiles= edit_compound_item.smiles
-            edit_compound_id = edit_compound_id
-            username = username
+            compound_data = cutome_fields_data.objects.get(compound_id=edit_compound_id)
+            customed_value_list = cutome_fields_dictionary.objects.all()
+            project = cutome_fields_dictionary.objects.filter(field_name='project').values_list('field_value',flat=True)
+            from_supplier = cutome_fields_dictionary.objects.filter(field_name='from_supplier').values_list('field_value', flat=True)
+            salt = cutome_fields_dictionary.objects.filter(field_name='salt').values_list('field_value', flat=True)
+            stoich = cutome_fields_dictionary.objects.filter(field_name='stoich').values_list('field_value', flat=True)
+            appearance = cutome_fields_dictionary.objects.filter(field_name='appearance').values_list('field_value',flat=True)
+            location = cutome_fields_dictionary.objects.filter(field_name='location').values_list('field_value',flat=True)
+            weight_unit = cutome_fields_dictionary.objects.filter(field_name='weight_unit').values_list('field_value',flat=True)
+            chiral = cutome_fields_dictionary.objects.filter(field_name='chiral').values_list('field_value', flat=True)
             return render(request, "edit_compound.html", locals())
         if request.method == 'POST':
-            #update_edit_smiles = request.POST.get('update_edit_smiles')
             edit_compound_id = request.POST.get('edit_compound_id')
-            print(edit_compound_id)
-            if models.mol_props.objects.filter(compound_id=edit_compound_id).exists():
-                update_item = mol_props.objects.get(compound_id=edit_compound_id)
-                update_edit_smiles = request.POST.get('update_edit_smiles')
-                print(update_edit_smiles)
-                if Chem.MolFromSmiles(update_edit_smiles) is None:
-                    html = '<center><p>结构有误，请重新输入！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
+            update_item = mol_props.objects.get(compound_id=edit_compound_id)
+            update_edit_smiles = request.POST.get('update_edit_smiles')
+            if Chem.MolFromSmiles(update_edit_smiles) is None:
+                html = '<center><p>结构有误，请重新输入！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
+                return HttpResponse(html)
+            elif update_edit_smiles == update_item.smiles:
+                mol_custom_data = cutome_fields_data.objects.get(compound_id=edit_compound_id)
+                new_project = request.POST.get('project')
+                new_supplier = request.POST.get('from_supplier')
+                new_weight = request.POST.get('weight')
+                new_weight_unit = request.POST.get('weight_unit')
+                new_supplier_ref = request.POST.get('supplier_ref')
+                new_location = request.POST.get('location')
+                new_appearance = request.POST.get('appearance')
+                new_stoich = request.POST.get('stoich')
+                new_chiral = request.POST.get('chiral')
+                new_salt = request.POST.get('salt')
+                new_comments = request.POST.get('comments')
+                if mol_custom_data.project == new_project and\
+                    mol_custom_data.from_supplier == new_supplier and\
+                    str(mol_custom_data.weight) == new_weight and\
+                    mol_custom_data.weight_unit == new_weight_unit and\
+                    mol_custom_data.supplier_ref == new_supplier_ref and\
+                    mol_custom_data.location == new_location and\
+                    mol_custom_data.appearance == new_appearance and\
+                    mol_custom_data.stoich == new_stoich and\
+                    mol_custom_data.chiral == new_chiral and\
+                    mol_custom_data.salt == new_salt and\
+                    mol_custom_data.comments == new_comments:
+                    html = '<center><p>未做任何修改！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
                     return HttpResponse(html)
                 else:
-                    if Chem.CanonSmiles(update_edit_smiles) == Chem.CanonSmiles(update_item.smiles):
-                        html = '<center><p>结构未做任何修改！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
-                        return HttpResponse(html)
-                    else:
-                        mol_file_path = './register/template/static/mol_file/%s.mol' % edit_compound_id
-                        mol_img_path = './register/template/static/mol_image/%s.png' % edit_compound_id
-                        if os.path.exists(mol_file_path):
-                            os.remove(mol_file_path)
-                        if os.path.exists(mol_img_path):
-                            os.remove(mol_img_path)
-                        smiles = update_edit_smiles
-                        mol_mem = Chem.MolFromSmiles(smiles)
-                        tpsa = round(Descriptors.TPSA(mol_mem), 3)
-                        logp = round(Descriptors.MolLogP(mol_mem), 3)
-                        mw = round(Descriptors.MolWt(mol_mem), 3)
-                        mol = Chem.MolToMolBlock(mol_mem)
-                        mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % edit_compound_id, 'w')
-                        mol_file_tmp.write(mol)
-                        mol_file_tmp.close()
-                        mol_file_path = '/static/mol_file/%s.mol' % edit_compound_id
-                        d = rdMolDraw2D.MolDraw2DCairo(300, 300)
-                        d.DrawMolecule(mol_mem)
-                        d.FinishDrawing()
-                        d.WriteDrawingText('./register/template/static/mol_image/%s.png' % edit_compound_id)
-                        img_path = '/static/mol_image/%s.png' % edit_compound_id
-                        time.sleep(0.25)
-                        # print(mol)
-                        fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
-                        # print(fp)
-                        if mol_props.objects.filter(smiles=smiles).exists():
-                            html = '<center><p>化合物已存在！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
-                            return HttpResponse(html)
-                        else:
-                            update_item.compound_id = edit_compound_id
-                            update_item.smiles = smiles
-                            update_item.mol_file = mol
-                            update_item.TPSA = tpsa
-                            update_item.xlogp = logp
-                            update_item.MW = mw
-                            update_item.img_file = img_path
-                            update_item.fingerprint = fp
-                            update_item.mol_file_path = mol_file_path
-                            update_item.save()
-                            return HttpResponse('更新成功！')
+                    update_custom_item = cutome_fields_data.objects.get(compound_id=edit_compound_id)
+                    update_custom_item.project = new_project
+                    update_custom_item.from_supplier = new_supplier
+                    update_custom_item.weight = new_weight
+                    update_custom_item.weight_unit = new_weight_unit
+                    update_custom_item.supplier_ref = new_supplier_ref
+                    update_custom_item.location = new_location
+                    update_custom_item.appearance = new_appearance
+                    update_custom_item.stoich = new_stoich
+                    update_custom_item.chiral = new_chiral
+                    update_custom_item.salt = new_salt
+                    update_custom_item.comments = new_comments
+                    update_custom_item.save()
+                    html = '<center><p>更新成功</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
+                    return HttpResponse(html)
+            else:
+                mol_file_path = './register/template/static/mol_file/%s.mol' % edit_compound_id
+                mol_img_path = './register/template/static/mol_image/%s.png' % edit_compound_id
+                if os.path.exists(mol_file_path):
+                    os.remove(mol_file_path)
+                if os.path.exists(mol_img_path):
+                    os.remove(mol_img_path)
+                smiles = update_edit_smiles
+                mol_mem = Chem.MolFromSmiles(smiles)
+                tpsa = round(Descriptors.TPSA(mol_mem), 3)
+                logp = round(Descriptors.MolLogP(mol_mem), 3)
+                mw = round(Descriptors.MolWt(mol_mem), 3)
+                mol = Chem.MolToMolBlock(mol_mem)
+                mol_file_tmp = open('./register/template/static/mol_file/%s.mol' % edit_compound_id, 'w')
+                mol_file_tmp.write(mol)
+                mol_file_tmp.close()
+                mol_file_path = '/static/mol_file/%s.mol' % edit_compound_id
+                d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                d.DrawMolecule(mol_mem)
+                d.FinishDrawing()
+                d.WriteDrawingText('./register/template/static/mol_image/%s.png' % edit_compound_id)
+                img_path = '/static/mol_image/%s.png' % edit_compound_id
+                fp = AllChem.GetMorganFingerprintAsBitVect(mol_mem, radius=2).ToBitString()
+                # print(fp)
+                if mol_props.objects.filter(smiles=smiles).exists():
+                    html = '<center><p>化合物已存在！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
+                    return HttpResponse(html)
+                else:
+                    update_item.compound_id = edit_compound_id
+                    update_item.smiles = smiles
+                    update_item.mol_file = mol
+                    update_item.TPSA = tpsa
+                    update_item.xlogp = logp
+                    update_item.MW = mw
+                    update_item.img_file = img_path
+                    update_item.fingerprint = fp
+                    update_item.mol_file_path = mol_file_path
+                    update_item.save()
+                new_project = request.POST.get('project')
+                new_supplier = request.POST.get('from_supplier')
+                new_weight = request.POST.get('weight')
+                new_weight_unit = request.POST.get('weight_unit')
+                new_supplier_ref = request.POST.get('supplier_ref')
+                new_location = request.POST.get('location')
+                new_appearance = request.POST.get('appearance')
+                new_stoich = request.POST.get('stoich')
+                new_chiral = request.POST.get('chiral')
+                new_salt = request.POST.get('salt')
+                new_comments = request.POST.get('comments')
+                update_custom_item = cutome_fields_data.objects.get(compound_id=edit_compound_id)
+                update_custom_item.project = new_project
+                update_custom_item.from_supplier = new_supplier
+                update_custom_item.weight = new_weight
+                update_custom_item.weight_unit = new_weight_unit
+                update_custom_item.supplier_ref = new_supplier_ref
+                update_custom_item.location = new_location
+                update_custom_item.appearance = new_appearance
+                update_custom_item.stoich = new_stoich
+                update_custom_item.chiral = new_chiral
+                update_custom_item.salt = new_salt
+                update_custom_item.comments = new_comments
+                update_custom_item.save()
+                html = '<center><p>更新成功！</p></br><a href = \'http://localhost:8000/edit_compound/?edit_compound_id=%s\'>返回</a></center>' % edit_compound_id
+                return HttpResponse(html)
     else:
         return redirect("/login/")
 
@@ -368,139 +427,6 @@ def compoundlist(request):
             sublist = paginator.page(paginator.num_pages)
         return render(request, "compoundlist.html", locals())
         # when first enter compoundlist
-    else:
-        return redirect("/login/")
-
-
-
-def search(request):
-    if request.session.get('is_login'):
-        username = request.session.get('username')
-        user_info = UsersInfo.objects.get(username=username)
-        return render(request, "search.html",locals())
-    else:
-        return redirect('/login/')
-
-
-def search_result(request):
-    if request.session.get('is_login'):
-        username = request.session.get('username')
-        user_info = UsersInfo.objects.get(username=username)
-        ##相似性结构检索，输入Similarity数值以及不输入Similarity数值
-        if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') != '':
-            getsearchsmiles = rdkit.Chem.CanonSmiles(request.POST.get('getsearchsmiles'), useChiral=1)
-            getsimilarity = float(request.POST.get('similarity'))
-            getsearchmol = Chem.MolFromSmiles(getsearchsmiles)
-            getsearchmol_fp = Chem.AllChem.GetMorganFingerprint(getsearchmol, 2)
-            if getsearchmol:
-                mol_list = mol_props.objects.all()
-                search_result = []
-                for item in mol_list:
-                    search_dict = {}
-                    smiles = item.smiles
-                    mol = Chem.MolFromSmiles(smiles)
-                    fp = Chem.AllChem.GetMorganFingerprint(mol, 2)
-                    similarity = DataStructs.DiceSimilarity(fp, getsearchmol_fp)
-                    if similarity > getsimilarity:
-                        search_dict['compound_id'] = item.compound_id
-                        search_dict['img_file'] = item.img_file
-                        search_dict['smiles'] = item.smiles
-                        search_dict['mol_file_path'] = item.mol_file_path
-                        search_dict['MW'] = item.MW
-                        search_dict['TPSA'] = item.TPSA
-                        search_dict['similarity'] = round(similarity, 3)
-                        search_dict['xlogp'] = round(item.xlogp, 3)
-                        search_result.append(search_dict)
-                search_result_sorted = sorted(search_result, key=operator.itemgetter('similarity'), reverse=True)
-                username = request.session['username']
-                return render(request, 'search_result.html', locals())
-        if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') == '':
-            html = '<center><p>请输入相似性数值！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
-            return HttpResponse(html)
-
-        ##属性检索Compound ID
-        if request.POST.get('compound_id') != '' and request.POST.get('similarity'):
-            compound_id = request.POST.get('compound_id')
-            mol_list = mol_props.objects.all()
-            search_result = []
-            for mol in mol_list:
-                search_dict = {}
-                if compound_id.upper() in mol.compound_id.upper():
-                    search_dict['compound_id'] = mol.compound_id
-                    search_dict['img_file'] = mol.img_file
-                    search_dict['smiles'] = mol.smiles
-                    search_dict['MW'] = mol.MW
-                    search_dict['mol_file_path'] = mol.mol_file_path
-                    search_dict['similarity'] = 'N/A'
-                    search_dict['TPSA'] = mol.TPSA
-                    search_dict['xlogp'] = round(mol.xlogp, 3)
-                    search_result.append(search_dict)
-                #else:
-                 #   return HttpResponse('没有检索到包含此ID的化合物！')
-            if len(search_result) == 0:
-                html = '<center><p>没有检索到包含此ID的化合物！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
-                return HttpResponse(html)
-            else:
-                username = request.session['username']
-                search_result_sorted = sorted(search_result, key=operator.itemgetter('compound_id'), reverse=False)
-            return render(request, 'search_result.html', locals())
-
-        ##属性检索MW
-        if request.POST.get('mw_value') and request.POST.get('mw_qualifier') and request.POST.get('similarity') :
-            mw_value = float(request.POST.get('mw_value'))
-            qf = request.POST.get('mw_qualifier')
-            print(qf,mw_value)
-            mol_list = mol_props.objects.all()
-            search_result = []
-            if qf == '<':
-                for mol in mol_list:
-                    search_dict = {}
-                    if mol.MW < mw_value:
-                        search_dict['compound_id'] = mol.compound_id
-                        search_dict['img_file'] = mol.img_file
-                        search_dict['smiles'] = mol.smiles
-                        search_dict['MW'] = mol.MW
-                        search_dict['TPSA'] = mol.TPSA
-                        search_dict['mol_file_path'] = mol.mol_file_path
-                        search_dict['similarity'] = 1
-                        search_dict['xlogp'] = round(mol.xlogp, 3)
-                        search_result.append(search_dict)
-            if qf == '>':
-                for mol in mol_list:
-                    search_dict = {}
-                    if mol.MW > mw_value:
-                        search_dict['compound_id'] = mol.compound_id
-                        search_dict['img_file'] = mol.img_file
-                        search_dict['smiles'] = mol.smiles
-                        search_dict['MW'] = mol.MW
-                        search_dict['TPSA'] = mol.TPSA
-                        search_dict['mol_file_path'] = mol.mol_file_path
-                        search_dict['similarity'] = 'N/A'
-                        search_dict['xlogp'] = round(mol.xlogp, 3)
-                        search_result.append(search_dict)
-            if qf == '=':
-                for mol in mol_list:
-                    search_dict = {}
-                    if mol.MW == mw_value:
-                        search_dict['compound_id'] = mol.compound_id
-                        search_dict['img_file'] = mol.img_file
-                        search_dict['smiles'] = mol.smiles
-                        search_dict['MW'] = mol.MW
-                        search_dict['TPSA'] = mol.TPSA
-                        search_dict['mol_file_path'] = mol.mol_file_path
-                        search_dict['similarity'] = 'N/A'
-                        search_dict['xlogp'] = round(mol.xlogp, 3)
-                        search_result.append(search_dict)
-                #else:
-                #   return HttpResponse('没有检索到包含此ID的化合物！')
-            if len(search_result) == 0:
-                html = '<center><p>没有检索到包此MW范围的化合物！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
-                return HttpResponse(html)
-            else:
-                search_result_sorted = sorted(search_result, key=operator.itemgetter('MW'), reverse=False)
-            return render(request, 'search_result.html', locals())
-        else:
-            return redirect('/search/')
     else:
         return redirect("/login/")
 
@@ -677,3 +603,244 @@ def custome_fields(request):
     else:
         return redirect('login/')
 
+
+def reagentlist(request):
+    if request.session.get('is_login'):
+        username = request.session.get('username')
+        user_info = UsersInfo.objects.get(username=username)
+        if request.method == 'POST':
+            reagent_smiles = request.POST.get('reagentsmiles')
+            if reagents.objects.filter(smiles=reagent_smiles).exists():
+                message = 'Reagent existed!'
+                reagent_list = reagents.objects.all().order_by('-reagentid')
+                return render(request, 'reagentlist.html', locals())
+            else:
+                cid_for_reagent = pcp.get_compounds(reagent_smiles, "smiles")[0].cid
+                url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/%s/JSON/?heading=CAS" % cid_for_reagent
+                user_agent = [
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                    "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
+                    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+                    "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)",
+                    "Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0",
+                    "Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5",
+                    "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
+                    "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
+                ]
+                response = requests.get(url, headers={'User-Agent': random.choice(user_agent), "connection": "close"},
+                                        timeout=5,
+                                        verify=False)
+                reagent_casnum = response.json()['Record']['Section'][0]['Section'][0]['Section'][0]["Information"][0]['Value'][
+                    'StringWithMarkup'][0]['String']
+                reagent = pcp.Compound.from_cid(cid_for_reagent)
+                reagent_iupac = reagent.iupac_name
+                print(reagent_casnum,reagent_iupac)
+                if reagents.objects.filter(name=reagent_iupac).exists():
+                    message = 'Reagent existed!'
+                    reagent_list = reagents.objects.all().order_by('-reagentid')
+                    return render(request, 'reagentlist.html', locals())
+                else:
+                    reagent_mol = Chem.MolFromSmiles(reagent_smiles)
+                    if reagents.objects.all().count() != 0:
+                        reagent_id_last = reagents.objects.order_by('-reagentid').first().reagentid
+                        # print(compound_id_last)
+                        id = reagent_id_last.split('-')[1]
+                        id_1 = int(id) + 1
+                        id_2 = str(id_1).zfill(6)
+                        reagent_id = 'Reagent-' + id_2
+                        # 分子图片输出
+                        d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                        d.DrawMolecule(reagent_mol)
+                        d.FinishDrawing()
+                        d.WriteDrawingText('./register/template/static/reagent_image/%s.png' % reagent_id)
+                        img_path = '/static/reagent_image/%s.png' % reagent_id
+                    else:
+                        reagent_id = 'Reagent-000001'
+                        # 分子图片输出
+                        d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                        d.DrawMolecule(reagent_mol)
+                        d.FinishDrawing()
+                        d.WriteDrawingText('./register/template/static/reagent_image/%s.png' % reagent_id)
+                        img_path = '/static/reagent_image/%s.png' % reagent_id
+                    reagents_insert = reagents.objects.create(reagentid=reagent_id,smiles = reagent_smiles,name = reagent_iupac,reagent_img_path = img_path,cas_no=reagent_casnum)
+                    reagents_insert.save()
+                    message = 'Success!'
+                    reagent_list = reagents.objects.all().order_by('-reagentid')
+                    return render(request,'reagentlist.html',locals())
+        if request.method == 'GET':
+            sub_reagent_smiles_s = request.GET.get('sub_reagent_smiles')
+            reagent_list = []
+            if not sub_reagent_smiles_s:
+                sub_reagent_smiles_s = ''
+                reagents_all = reagents.objects.all()
+                for reagent in reagents_all:
+                    reagent_list.append(reagent.smiles)
+            else:
+                reagents_all = reagents.objects.all()
+                for reagent in reagents_all:
+                    m = Chem.MolFromSmiles(reagent.smiles)
+                    if m.HasSubstructMatch(Chem.MolFromSmiles(sub_reagent_smiles_s)):
+                        reagent_list.append(reagent.smiles)
+
+            sub_reagent_id_s = request.GET.get('sub_reagent_id')
+            if not sub_reagent_id_s:
+                sub_reagent_id_s = ''
+            sub_reagent_iupac_name_s= request.GET.get('sub_reagent_iupac_name')
+            if not sub_reagent_iupac_name_s:
+                sub_reagent_iupac_name_s = ''
+            sub_reagent_cas_no_s = request.GET.get('sub_reagent_cas_no')
+            if not sub_reagent_cas_no_s:
+                sub_reagent_cas_no_s = ''
+            reagent_query_set_ori = reagents.objects \
+                .filter(smiles__in = reagent_list)\
+                .filter(reagentid__icontains=sub_reagent_id_s) \
+                .filter(name__icontains=sub_reagent_iupac_name_s) \
+                .filter(cas_no__icontains=sub_reagent_cas_no_s)
+            reagent_list = reagent_query_set_ori.order_by('-reagentid')
+            return render(request, 'reagentlist.html', locals())
+    else:
+        return redirect('login/')
+
+
+
+
+
+
+# def search(request):
+#     if request.session.get('is_login'):
+#         username = request.session.get('username')
+#         user_info = UsersInfo.objects.get(username=username)
+#         return render(request, "search.html",locals())
+#     else:
+#         return redirect('/login/')
+#
+#
+# def search_result(request):
+#     if request.session.get('is_login'):
+#         username = request.session.get('username')
+#         user_info = UsersInfo.objects.get(username=username)
+#         ##相似性结构检索，输入Similarity数值以及不输入Similarity数值
+#         if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') != '':
+#             getsearchsmiles = rdkit.Chem.CanonSmiles(request.POST.get('getsearchsmiles'), useChiral=1)
+#             getsimilarity = float(request.POST.get('similarity'))
+#             getsearchmol = Chem.MolFromSmiles(getsearchsmiles)
+#             getsearchmol_fp = Chem.AllChem.GetMorganFingerprint(getsearchmol, 2)
+#             if getsearchmol:
+#                 mol_list = mol_props.objects.all()
+#                 search_result = []
+#                 for item in mol_list:
+#                     search_dict = {}
+#                     smiles = item.smiles
+#                     mol = Chem.MolFromSmiles(smiles)
+#                     fp = Chem.AllChem.GetMorganFingerprint(mol, 2)
+#                     similarity = DataStructs.DiceSimilarity(fp, getsearchmol_fp)
+#                     if similarity > getsimilarity:
+#                         search_dict['compound_id'] = item.compound_id
+#                         search_dict['img_file'] = item.img_file
+#                         search_dict['smiles'] = item.smiles
+#                         search_dict['mol_file_path'] = item.mol_file_path
+#                         search_dict['MW'] = item.MW
+#                         search_dict['TPSA'] = item.TPSA
+#                         search_dict['similarity'] = round(similarity, 3)
+#                         search_dict['xlogp'] = round(item.xlogp, 3)
+#                         search_result.append(search_dict)
+#                 search_result_sorted = sorted(search_result, key=operator.itemgetter('similarity'), reverse=True)
+#                 username = request.session['username']
+#                 return render(request, 'search_result.html', locals())
+#         if request.POST.get('getsearchsmiles') != '' and request.POST.get('similarity') == '':
+#             html = '<center><p>请输入相似性数值！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
+#             return HttpResponse(html)
+#
+#         ##属性检索Compound ID
+#         if request.POST.get('compound_id') != '' and request.POST.get('similarity'):
+#             compound_id = request.POST.get('compound_id')
+#             mol_list = mol_props.objects.all()
+#             search_result = []
+#             for mol in mol_list:
+#                 search_dict = {}
+#                 if compound_id.upper() in mol.compound_id.upper():
+#                     search_dict['compound_id'] = mol.compound_id
+#                     search_dict['img_file'] = mol.img_file
+#                     search_dict['smiles'] = mol.smiles
+#                     search_dict['MW'] = mol.MW
+#                     search_dict['mol_file_path'] = mol.mol_file_path
+#                     search_dict['similarity'] = 'N/A'
+#                     search_dict['TPSA'] = mol.TPSA
+#                     search_dict['xlogp'] = round(mol.xlogp, 3)
+#                     search_result.append(search_dict)
+#                 #else:
+#                  #   return HttpResponse('没有检索到包含此ID的化合物！')
+#             if len(search_result) == 0:
+#                 html = '<center><p>没有检索到包含此ID的化合物！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
+#                 return HttpResponse(html)
+#             else:
+#                 username = request.session['username']
+#                 search_result_sorted = sorted(search_result, key=operator.itemgetter('compound_id'), reverse=False)
+#             return render(request, 'search_result.html', locals())
+#
+#         ##属性检索MW
+#         if request.POST.get('mw_value') and request.POST.get('mw_qualifier') and request.POST.get('similarity') :
+#             mw_value = float(request.POST.get('mw_value'))
+#             qf = request.POST.get('mw_qualifier')
+#             print(qf,mw_value)
+#             mol_list = mol_props.objects.all()
+#             search_result = []
+#             if qf == '<':
+#                 for mol in mol_list:
+#                     search_dict = {}
+#                     if mol.MW < mw_value:
+#                         search_dict['compound_id'] = mol.compound_id
+#                         search_dict['img_file'] = mol.img_file
+#                         search_dict['smiles'] = mol.smiles
+#                         search_dict['MW'] = mol.MW
+#                         search_dict['TPSA'] = mol.TPSA
+#                         search_dict['mol_file_path'] = mol.mol_file_path
+#                         search_dict['similarity'] = 1
+#                         search_dict['xlogp'] = round(mol.xlogp, 3)
+#                         search_result.append(search_dict)
+#             if qf == '>':
+#                 for mol in mol_list:
+#                     search_dict = {}
+#                     if mol.MW > mw_value:
+#                         search_dict['compound_id'] = mol.compound_id
+#                         search_dict['img_file'] = mol.img_file
+#                         search_dict['smiles'] = mol.smiles
+#                         search_dict['MW'] = mol.MW
+#                         search_dict['TPSA'] = mol.TPSA
+#                         search_dict['mol_file_path'] = mol.mol_file_path
+#                         search_dict['similarity'] = 'N/A'
+#                         search_dict['xlogp'] = round(mol.xlogp, 3)
+#                         search_result.append(search_dict)
+#             if qf == '=':
+#                 for mol in mol_list:
+#                     search_dict = {}
+#                     if mol.MW == mw_value:
+#                         search_dict['compound_id'] = mol.compound_id
+#                         search_dict['img_file'] = mol.img_file
+#                         search_dict['smiles'] = mol.smiles
+#                         search_dict['MW'] = mol.MW
+#                         search_dict['TPSA'] = mol.TPSA
+#                         search_dict['mol_file_path'] = mol.mol_file_path
+#                         search_dict['similarity'] = 'N/A'
+#                         search_dict['xlogp'] = round(mol.xlogp, 3)
+#                         search_result.append(search_dict)
+#                 #else:
+#                 #   return HttpResponse('没有检索到包含此ID的化合物！')
+#             if len(search_result) == 0:
+#                 html = '<center><p>没有检索到包此MW范围的化合物！</p></br><a href = \'/search/\'>返回搜索页面</a></center>'
+#                 return HttpResponse(html)
+#             else:
+#                 search_result_sorted = sorted(search_result, key=operator.itemgetter('MW'), reverse=False)
+#             return render(request, 'search_result.html', locals())
+#         else:
+#             return redirect('/search/')
+#     else:
+#         return redirect("/login/")
