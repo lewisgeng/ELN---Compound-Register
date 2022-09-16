@@ -33,6 +33,11 @@ Substructure search and similarity/descriptor search
 ![image](https://user-images.githubusercontent.com/110211839/189465936-1ae95fc7-a373-4a09-bfe1-b8c05d326c7e.png)
 ![image](https://user-images.githubusercontent.com/110211839/189465877-363430be-4bb8-48b6-88e7-e3f3d0107274.png)
 
+Retrieive CAS Number and generate compound report
+![image](https://user-images.githubusercontent.com/110211839/190561151-68257b78-1d28-4839-9a0f-dd69890e6544.png)
+![image](https://user-images.githubusercontent.com/110211839/190561267-a2767b68-1e5c-4871-8a3a-86e515a65fc3.png)
+
+
 Custom Data Field
 ![image](https://user-images.githubusercontent.com/110211839/189465893-43bdc798-2f90-49a3-a124-d70dbcc9b2be.png)
 
