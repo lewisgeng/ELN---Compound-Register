@@ -29,7 +29,7 @@ Compound registration
 
 ![image](https://user-images.githubusercontent.com/110211839/190569556-7492f8b3-8916-4e41-8e03-78888b4fead9.png)
 
-Substructure search and similarity/descriptor search
+Substructure search and data filter
 ![image](https://user-images.githubusercontent.com/110211839/190569606-cc752875-5b0b-4de7-9851-ceb9b80ba1c0.png)
 ![image](https://user-images.githubusercontent.com/110211839/190569637-ae6fc69e-6147-4ce5-9d4b-00492ebe1192.png)
 
