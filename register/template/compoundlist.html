@@ -57,9 +57,9 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button { -webkit-appearance: none !important;}
 
 
- img:hover{
-     transform:scale(3,3);
- }
+ {#img:hover{#}
+ {#    transform:scale(3,3);#}
+ {##}
 
 .breadcrumb > li + li:before {
     color: #cccccc;
@@ -146,7 +146,7 @@ function showsaved(){
         <a class="nav-link" href="/reagentlist">Reagents</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/compoundlist">Salts</a>
+        <a class="nav-link" href="/saltlist">Salts</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -164,14 +164,13 @@ function showsaved(){
       <li class="nav-item dropdown">
 
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc;transform:none">
+            <img src="{{ user_info.avatar_file_path }}"  style="wdith:2rem;height:2rem;border-radius: 50%;border:1px solid #cccccc">
             Welcome, {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/logout">Logout</a>
           <a class="dropdown-item" href="/profile/">User Profile</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
         </div>
       </li>
     </ul>
@@ -321,7 +320,7 @@ function showsaved(){
 <tbody>
      {%for item in sublist %}
 	<tr>
-            <td class="col-2"><img src="{{item.compound.img_file}}" style="width: 80%;"></td>
+        <td class="col-2"><a href="details?compound_id={{item.compound_id}}"><img src="{{item.compound.img_file}}" style="width: 80%;"></a></td>
 		    <td>{{item.compound_id}}</td>
             <td id="smiles_domain" style="display: none">{{item.smiles}}</td>
             <td >{{item.project}}</td>
@@ -363,11 +362,11 @@ function showsaved(){
   <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
         {% if sublist.has_previous %}
-        <li class="page-item">
+        <li class="page-item" >
           <a class="page-link" href="?page={{ sublist.previous_page_number }}" tabindex="-1">Previous</a>
         </li>
         {% endif %}
-            <li class="page-item">
+        <li class="page-item">
         <a class="page-link" href="#">Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}</a>
 {#        Page {{ sublist.number }} of {{ sublist.paginator.num_pages }}#}
         </li>
@@ -392,7 +391,7 @@ function showsaved(){
         </div>
 
         <div style="text-align: center">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="getifKetcher();showsaved()">Save</button>
+            <button type="button" class="btn" data-dismiss="modal" onclick="getifKetcher();showsaved()">Save</button>
         </div>
     </div>
   </div>

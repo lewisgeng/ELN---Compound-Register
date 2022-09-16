@@ -43,6 +43,15 @@ class reagents(models.Model):
     cas_no = models.CharField(max_length=100)
     smiles = models.CharField(max_length=1000)
     reagent_img_path = models.CharField(max_length=500)
+    registration_time = models.DateTimeField(blank=True)
+    MW = models.FloatField(default=0)
 
 
-
+class salts(models.Model):
+    saltid = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
+    cas_no = models.CharField(max_length=100)
+    smiles = models.CharField(max_length=1000,default='')
+    salt_img_path = models.CharField(max_length=500)
+    registration_time = models.DateTimeField(blank=True)
+    MW = models.FloatField(default=0)

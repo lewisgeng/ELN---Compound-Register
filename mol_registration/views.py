@@ -7,13 +7,13 @@ from rdkit import Chem, DataStructs
 import rdkit
 from rdkit.Chem import AllChem, Descriptors
 from rdkit.Chem.Draw import rdMolDraw2D
-from .models import mol_props, cutome_fields_data, cutome_fields_dictionary,reagents
+from .models import mol_props, cutome_fields_data, cutome_fields_dictionary,reagents,salts
 import datetime
 from . import models
 from user.models import UsersInfo
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import pubchempy as pcp, requests, random
-
+from django.forms.models import model_to_dict
 
 def index(request):
     if request.session.get('is_login'):
@@ -539,8 +539,11 @@ def custome_fields(request):
         if request.method == 'POST':
             if request.POST.get('custome_field') and request.POST.get('custome_value'):
                 custome_field = request.POST.get('custome_field')
+                query_field = custome_field
                 custome_value = request.POST.get('custome_value')
-                print(custome_field, custome_value)
+                customed_field_value = cutome_fields_dictionary.objects.filter(field_name=custome_field).values_list(
+                    'field_value', flat=True)
+                #print(custome_field, custome_value)
                 if cutome_fields_dictionary.objects.filter(field_name=custome_field).exists():
                     customed_value_list= cutome_fields_dictionary.objects.filter(field_name=custome_field).values_list('field_value',flat=True)
                     if custome_value == '':
@@ -642,13 +645,15 @@ def reagentlist(request):
                     'StringWithMarkup'][0]['String']
                 reagent = pcp.Compound.from_cid(cid_for_reagent)
                 reagent_iupac = reagent.iupac_name
-                print(reagent_casnum,reagent_iupac)
+                registration_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                #print(reagent_casnum,reagent_iupac)
                 if reagents.objects.filter(name=reagent_iupac).exists():
                     message = 'Reagent existed!'
                     reagent_list = reagents.objects.all().order_by('-reagentid')
                     return render(request, 'reagentlist.html', locals())
                 else:
                     reagent_mol = Chem.MolFromSmiles(reagent_smiles)
+                    mw = round(Descriptors.MolWt(reagent_mol), 3)
                     if reagents.objects.all().count() != 0:
                         reagent_id_last = reagents.objects.order_by('-reagentid').first().reagentid
                         # print(compound_id_last)
@@ -670,7 +675,7 @@ def reagentlist(request):
                         d.FinishDrawing()
                         d.WriteDrawingText('./register/template/static/reagent_image/%s.png' % reagent_id)
                         img_path = '/static/reagent_image/%s.png' % reagent_id
-                    reagents_insert = reagents.objects.create(reagentid=reagent_id,smiles = reagent_smiles,name = reagent_iupac,reagent_img_path = img_path,cas_no=reagent_casnum)
+                    reagents_insert = reagents.objects.create(registration_time=registration_time,MW=mw,reagentid=reagent_id,smiles = reagent_smiles,name = reagent_iupac,reagent_img_path = img_path,cas_no=reagent_casnum)
                     reagents_insert.save()
                     message = 'Success!'
                     reagent_list = reagents.objects.all().order_by('-reagentid')
@@ -699,19 +704,157 @@ def reagentlist(request):
             sub_reagent_cas_no_s = request.GET.get('sub_reagent_cas_no')
             if not sub_reagent_cas_no_s:
                 sub_reagent_cas_no_s = ''
+            sub_mws_s = request.GET.get('mws')
+            if not sub_mws_s:
+                sub_mws_s = '-Infinity'
+            sub_mwl_s = request.GET.get('mwl')
+            if not sub_mwl_s:
+                sub_mwl_s = 'Infinity'
+            registration_times_s = request.GET.get('registration_times_s')
+            if not registration_times_s:
+                registration_times_s = '1900-01-01 10:00'
+            registration_timel_s = request.GET.get('registration_timel_s')
+            if not registration_timel_s:
+                registration_timel_s = '2100-01-01 10:00'
+
             reagent_query_set_ori = reagents.objects \
                 .filter(smiles__in = reagent_list)\
                 .filter(reagentid__icontains=sub_reagent_id_s) \
                 .filter(name__icontains=sub_reagent_iupac_name_s) \
-                .filter(cas_no__icontains=sub_reagent_cas_no_s)
+                .filter(cas_no__icontains=sub_reagent_cas_no_s)\
+                .filter(MW__gte=sub_mws_s).filter(MW__lte=sub_mwl_s) \
+                .filter(registration_time__gte=registration_times_s).filter(registration_time__lte=registration_timel_s)
             reagent_list = reagent_query_set_ori.order_by('-reagentid')
             return render(request, 'reagentlist.html', locals())
     else:
-        return redirect('login/')
+        return redirect('/login/')
 
 
+def saltlist(request):
+    if request.session.get('is_login'):
+        username = request.session.get('username')
+        user_info = UsersInfo.objects.get(username=username)
+        if request.method == 'POST':
+            salt_smiles = request.POST.get('saltsmiles')
+            if salts.objects.filter(smiles=salt_smiles).exists():
+                message = 'Salt existed!'
+                salt_list = salts.objects.all().order_by('-saltid')
+                return render(request, 'saltlist.html', locals())
+            else:
+                cid_for_salt = pcp.get_compounds(salt_smiles, "smiles")[0].cid
+                url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/%s/JSON/?heading=CAS" % cid_for_salt
+                user_agent = [
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                    "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
+                    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+                    "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
+                    "Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)",
+                    "Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1",
+                    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0",
+                    "Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5",
+                    "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
+                    "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
+                ]
+                response = requests.get(url, headers={'User-Agent': random.choice(user_agent), "connection": "close"},
+                                        timeout=5,
+                                        verify=False)
+                salt_casnum = response.json()['Record']['Section'][0]['Section'][0]['Section'][0]["Information"][0]['Value'][
+                    'StringWithMarkup'][0]['String']
+                salt = pcp.Compound.from_cid(cid_for_salt)
+                salt_iupac = salt.iupac_name
+                registration_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                #print(reagent_casnum,reagent_iupac)
+                if salts.objects.filter(name=salt_iupac).exists():
+                    message = 'Salt existed!'
+                    salt_list = reagents.objects.all().order_by('-saltid')
+                    return render(request, 'saltlist.html', locals())
+                else:
+                    salt_mol = Chem.MolFromSmiles(salt_smiles)
+                    mw = round(Descriptors.MolWt(salt_mol), 3)
+                    if salts.objects.all().count() != 0:
+                        salt_id_last = salts.objects.order_by('-saltid').first().saltid
+                        # print(compound_id_last)
+                        id = salt_id_last.split('-')[1]
+                        id_1 = int(id) + 1
+                        id_2 = str(id_1).zfill(6)
+                        salt_id = 'Salt-' + id_2
+                        # 分子图片输出
+                        d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                        d.DrawMolecule(salt_mol)
+                        d.FinishDrawing()
+                        d.WriteDrawingText('./register/template/static/salt_image/%s.png' % salt_id)
+                        img_path = '/static/salt_image/%s.png' % salt_id
+                    else:
+                        salt_id = 'Salt-000001'
+                        # 分子图片输出
+                        d = rdMolDraw2D.MolDraw2DCairo(300, 300)
+                        d.DrawMolecule(salt_mol)
+                        d.FinishDrawing()
+                        d.WriteDrawingText('./register/template/static/salt_image/%s.png' % salt_id)
+                        img_path = '/static/salt_image/%s.png' % salt_id
+                    salts_insert = salts.objects.create(registration_time=registration_time,MW=mw,saltid=salt_id,name = salt_iupac,salt_img_path = img_path,cas_no=salt_casnum)
+                    salts_insert.save()
+                    message = 'Success!'
+                    salt_list = salts.objects.all().order_by('-saltid')
+                    return render(request,'saltlist.html',locals())
+        salt_list = salts.objects.all().order_by('-saltid')
+        return render(request, 'saltlist.html', locals())
+    else:
+        return redirect('/login/')
 
+def details(request):
+    if request.session.get('is_login'):
+        username = request.session.get('username')
+        user_info = UsersInfo.objects.get(username=username)
+        compound_id = request.GET.get('compound_id')
+        item = cutome_fields_data.objects.get(compound_id=compound_id)
+        item_dict = model_to_dict(item,exclude=['id','compound','batch_id'])
+        item_primary = item.compound
+        item_primary_dict = model_to_dict(item_primary,exclude=['mol_file', 'mol_file_path', 'smiles', 'img_file', 'fingerprint'])
 
+        smiles = item.compound.smiles
+        cid = pcp.get_compounds(smiles, "smiles")[0].cid
+        if cid:
+            compound = pcp.Compound.from_cid(cid)
+            compound_iupac = compound.iupac_name
+            url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/%s/JSON/?heading=CAS" % cid
+            user_agent = [
+                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
+                "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+                "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
+                "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+                "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
+                "Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)",
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)",
+                "Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6",
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1",
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0",
+                "Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5",
+                "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
+                "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
+            ]
+            response = requests.get(url, headers={'User-Agent': random.choice(user_agent), "connection": "close"},
+                                    timeout=5,
+                                    verify=False)
+            if response:
+                casnum = response.json()['Record']['Section'][0]['Section'][0]['Section'][0]["Information"][0]['Value']['StringWithMarkup'][0]['String']
+            else:
+                casnum='None'
+        else:
+            compound_iupac='No retrieved name'
+            casnum = 'None'
+        return render(request, 'details.html', locals())
+    else:
+        return redirect('/login/')
 
 
 # def search(request):

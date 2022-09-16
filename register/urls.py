@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path,re_path
 import user.views as user_view
 import mol_registration.views as mol_registration_view
+import file_maker.views as file_maker_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,7 +38,10 @@ urlpatterns = [
     # path('search/', mol_registration_view.search),
     # path('search_result/', mol_registration_view.search_result),
     path('compoundlist/', mol_registration_view.compoundlist),
+    path('compoundlist/details', mol_registration_view.details),
+    path('compoundlist/details/reports', file_maker_view.compound_report),
     path('reagentlist/', mol_registration_view.reagentlist),
+    path('saltlist/', mol_registration_view.saltlist),
     path('delete_compound/', mol_registration_view.delete_compound),
     path('confirm_delete_compound/', mol_registration_view.confirm_delete_compound),
     path('edit_compound/', mol_registration_view.edit_compound),

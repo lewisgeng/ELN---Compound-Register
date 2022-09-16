@@ -2,25 +2,6 @@
 
 {% block script %}
 <script type="text/javascript">
-    function getifKetcher(ifKetcher){
-	var ketcherFrame = document.getElementById('ifKetcher');
-	var ketcher = null;
-	if ('contentDocument' in ketcherFrame)
-		ketcher = ketcherFrame.contentWindow.ketcher;
-	else // IE7
-		ketcher = document.frames['ifKetcher'].window.ketcher;
-	//window.console.info(ketcher.getSmiles());
-	ketcher.getSmiles(true).then((result) => {
-        //alert(result);
-		document.getElementById('update_edit_smiles').value = result;
-		if (result.length == 0)
-		    alert('没有获取到化合物结构，请重新输入! ')
-        else
-		    window.console.info(document.getElementById('update_edit_smiles').value )
-		    document.getElementById('submit_update_smiles').submit();
-      })
-		}
-
     function custome_field_func(){
 
         custom_field = document.getElementById('custome_field').value;
@@ -92,7 +73,7 @@
         <a class="nav-link" href="/reagentlist">Reagents</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/compoundlist">Salts</a>
+        <a class="nav-link" href="/saltlist">Salts</a>
       </li>
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -114,10 +95,9 @@
             Welcome, {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/logout">Logout</a>
           <a class="dropdown-item" href="/profile/">User Profile</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
         </div>
       </li>
     </ul>
@@ -136,7 +116,6 @@
       <a href="" class="list-group-item list-group-item-action" style="background-color: #f8f9fa ">Data Field</a>
       <a href="/user_admin/" class="list-group-item list-group-item-action">User Admin</a>
     </div>
-
     <table class="col-8" id="custome_field_table">
         <tr id = 'dxbox'>
             <td class="col-12">
@@ -163,20 +142,35 @@
                                 <button type="submit" class="btn btn-outline-secondary ml-2">Add</button>
                             </div>
                         </form>
+                        <table class="table table-hover table-sm col-12">
+                          <thead>
+                            <tr>
+                              <th scope="col">Field Name</th>
+                              <th scope="col">Value</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td style='vertical-align: middle' class="col-4">{{ query_field }}</td>
+                              <td style='vertical-align: middle'>
+                                  {%for item in customed_field_value %}
+                                      <label class="form-check-label col-6">
+                                        <input id = 'checkbox_field' onchange="delete_button_action()" type="checkbox" class="form-check-input" value="{{item}}">{{item}}
+                                      </label>
+                                      <br>
+                                  {% endfor %}
+                              </td>
+                              <td style='vertical-align: middle'>
+                                  <div id = 'delete_button' style="margin: auto 0;display: none" >
+                                    <button class="btn btn-sm btn-danger" onclick="delete_field_value()" >Delete</button>
+                                  </div>
+                              </td>
+                            </tr>
+                            </tbody>
+                         </table>
                 </div>
                 <div class="row col-12">
-                    <div class="col-6">
-                    {%for item in customed_field_value %}
-                      <label class="form-check-label ml-4">
-                        <input id = 'checkbox_field' onchange="delete_button_action()" type="checkbox" class="form-check-input" value="{{item}}">{{item}}
-                      </label>
-                      <br>
-                    {% endfor %}
-                    </div>
-                    <div id = 'delete_button' class="col-3" style="margin: auto 0;display: none" >
-                        <button class="btn btn-danger" onclick="delete_field_value()" >Delete</button>
-                    </div>
-                        <div class="col-12 text-center"><p>{{ message }}</p></div>
+                    <div class="col-12 text-center"><p>{{ message }}</p></div>
                 </div>
             </td>
     </table>

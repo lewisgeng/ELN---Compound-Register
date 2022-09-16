@@ -46,9 +46,14 @@ function goto_searchreagent(){
     var sub_reagent_id = document.getElementById('reagent_id').value;
     var sub_reagent_iupac_name = document.getElementById('reagent_iupac_name').value;
     var sub_reagent_cas_no = document.getElementById('reagent_cas_no').value;
+    var mws = document.getElementById('mws').value;
+    var mwl = document.getElementById('mwl').value;
+    var registration_times = document.getElementById('registration_times').value;
+    var registration_timel = document.getElementById('registration_timel').value;
     window.console.info(sub_reagent_id)
     var url=''
     url = "/reagentlist/?sub_reagent_smiles="+ sub_reagent_smiles+'&sub_reagent_id='+sub_reagent_id+'&sub_reagent_iupac_name='+sub_reagent_iupac_name+'&sub_reagent_cas_no='+sub_reagent_cas_no
+        +'&mws='+mws+'&mwl='+mwl+'&registration_times='+registration_times+'&registration_timel='+registration_timel
     window.location.href = url
 }
 function showsaved(){
@@ -121,7 +126,7 @@ function showsaved(){
         <a class="nav-link" href="/reagentlist">Reagents</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/compoundlist">Salts</a>
+        <a class="nav-link" href="/saltlist">Salts</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -143,10 +148,9 @@ function showsaved(){
             Welcome, {{ username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/logout">Logout</a>
           <a class="dropdown-item" href="/profile/">User Profile</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
         </div>
       </li>
     </ul>
@@ -162,7 +166,7 @@ function showsaved(){
 
 <div class="row mt-3">
     <div class="col-lg-5 offset-1" style="border-right: 1px dashed #cccccc">
-            <iframe id="ifKetcher" src="/static/ketcher/index.html?moll={{ reagent_smiles }}&hiddenControls=help,about" width="720" height="560"
+            <iframe id="ifKetcher" src="/static/ketcher/index.html?moll={{ reagent_smiles }}&hiddenControls=help,about,custom templates" width="720" height="560"
             style="border: none;-ms-zoom: 0.85;
                 -moz-transform: scale(0.85);
                 -moz-transform-origin: 0 0;
@@ -180,7 +184,7 @@ function showsaved(){
                 </form>
             </div>
     </div>
-    <div class="col-lg-5" style="overflow-y:scroll;overflow-x:hidden;height:550px">
+    <div  style="overflow-y:scroll;overflow-x:hidden;height:550px;width: 45em">
       <table class="table table-hover table-sm col-8 text-center" >
           <thead>
             <tr>
@@ -189,18 +193,30 @@ function showsaved(){
               <th scope="col">Reagent ID</th>
               <th scope="col">IUPAC Name</th>
               <th scope="col">CAS No.</th>
+              <th scope="col">MW</th>
+              <th scope="col">Reg. Date</th>
               <th scope="col"></th>
             </tr>
             <tr style="background-color: #f8f9fa">
                 {% csrf_token %}
                  <th></th>
-                <th><a style="cursor: pointer" class="btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg"><i class="fa fa-pencil"></i></a>
+                <th style="vertical-align: middle"><a style="cursor: pointer" class="btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg"><i class="fa fa-pencil"></i></a>
                     <a id='save_div' style="display: none;color: #1B893A">saved!</a>
                     <input type="text" id='query_reagent_smiles' value="{{ sub_reagent_smiles_s }}" style="display: none"></input>
                 </th>
-                <th><input type="text" id="reagent_id" value="{{ sub_reagent_id_s }}"></th>
-                <th><input type="text" id="reagent_iupac_name" value="{{ sub_reagent_iupac_name_s }}"></th>
-                <th><input type="text" id="reagent_cas_no" value="{{ sub_reagent_cas_no_s }}"></th>
+                <th style="vertical-align: middle"><input type="text" id="reagent_id" value="{{ sub_reagent_id_s }}"></th>
+                <th style="vertical-align: middle"><input type="text" id="reagent_iupac_name" value="{{ sub_reagent_iupac_name_s }}"></th>
+                <th style="vertical-align: middle"><input type="text" id="reagent_cas_no" value="{{ sub_reagent_cas_no_s }}"></th>
+                <th>
+                    <input id="mws" style= 'color: #cdcdcd' value="{{ sub_mws_s }}" placeholder="min" value=-Infinity onfocus="javascript:if(this.value==-Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=-Infinity">
+                    <br>-<br>
+                    <input id="mwl" style= 'color: #cdcdcd' value="{{ sub_mwl_s }}" placeholder="max" value=Infinity  onfocus="javascript:if(this.value==Infinity)this.value=''" onblur="javascript:if(this.value=='')this.value=Infinity">
+                </th>
+                    <th>
+                    <input id="registration_times" value="{{ registration_times_s }}" type='datetime'  value="2022-01-01 10:00">
+                        <br>-<br>
+                    <input id="registration_timel" value="{{ registration_timel_s }}" type='datetime'  value="2032-01-01 10:00">
+                </th>
                 <th>
                     <a style="cursor: pointer" onclick=window.location.href="/reagentlist/"><i class="fa fa-remove"></i></a>
                     <a style="cursor: pointer" onclick="goto_searchreagent()"><i class="fa fa-search"></i></a>
@@ -216,6 +232,8 @@ function showsaved(){
               <td style="vertical-align: middle">{{ reagent.reagentid }}</td>
               <td style="vertical-align: middle">{{ reagent.name }}</td>
               <td style="vertical-align: middle">{{ reagent.cas_no }}</td>
+              <td style="vertical-align: middle">{{ reagent.MW }}</td>
+              <td style="vertical-align: middle">{{ reagent.registration_time }}</td>
             </tr>
           {% endfor %}
           </tbody>
@@ -231,7 +249,7 @@ function showsaved(){
   <div class="modal-dialog modal-lg">
     <div class="modal-content" style="text-align: center;background-color: transparent;border: none">
         <div>
-            <iframe id="ifKetcher_reagent" src="/static/ketcher/index.html?hiddenControls=help,about" width="650" height="480"  style="border: none;border-radius:3px"></iframe>
+            <iframe id="ifKetcher_reagent" src="/static/ketcher/index.html?moll={{ sub_reagent_smiles_s }}&hiddenControls=help,about" width="650" height="480"  style="border: none;border-radius:3px"></iframe>
         </div>
 
         <div style="text-align: center">
