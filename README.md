@@ -19,7 +19,7 @@ EVER EVER EVER!
 
 Login page
 
-![image](https://user-images.githubusercontent.com/110211839/188128686-bad3e1c1-56cd-48ee-a824-40bb9104be38.png)
+![image](https://user-images.githubusercontent.com/110211839/190570357-969a390d-de8b-45cf-87af-0d5c743443f4.png)
 
 Main page
 
